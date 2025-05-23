@@ -1,0 +1,30 @@
+EMBEDDING CODE
+
+
+Qualtrics.SurveyEngine.addOnReady(function() {
+  var competition = "${e://Field(Competition)}";
+  var valence     = "${e://Field(Seq1)}";
+  var round       = 1;
+  var qid         = this.questionId;
+
+  var base = "https://jxmis0n.github.io/TetrisExperiment/index.html";
+  var src  = base
+    + "?competition=" + encodeURIComponent(competition)
+    + "&valence="     + encodeURIComponent(valence)
+    + "&round="       + round;
+
+  var html = ''
+    + '<h3>Tetris vs CPU (' + competition + ' Competition)</h3>'
+    + '<iframe src="' + src + '" '
+    +   'width="800" height="900" frameborder="0" allowfullscreen>'
+    + '</iframe>';
+
+  jQuery("#" + qid + " .QuestionText").html(html);
+
+  window.addEventListener("message", function(evt) {
+    var d = evt.data;
+    if(!d || d.type!=="chatResponse" || d.round!==round) return;
+    Qualtrics.SurveyEngine.setEmbeddedData("ChatResponse1", d.text);
+    jQuery("#NextButton").click();
+  });
+});
