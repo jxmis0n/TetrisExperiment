@@ -3,18 +3,14 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no" />
-  <title>Tetris vs CPU</title>
+  <title>Tetris vs</title>
   <style>
-    /* Prevent scrolling */
     html, body { margin:0; padding:0; height:100%; overflow:hidden; }
-    /* LOADING SCREEN */
     #loadingOverlay { position:absolute; top:0; left:0; right:0; bottom:0; background:#000; color:#fff; display:flex; flex-direction:column; align-items:center; justify-content:center; z-index:100; }
     #loadingText { font-size:24px; margin-bottom:20px; }
     #loadingBarBg { width:80%; height:20px; background:#444; border-radius:10px; overflow:hidden; }
     #loadingBarFg { width:0%; height:100%; background:limegreen; transition:width 0.2s linear; }
-    /* COUNTDOWN */
     #countdownOverlay { position:absolute; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.8); color:#fff; font-size:100px; display:flex; align-items:center; justify-content:center; z-index:90; visibility:hidden; }
-    /* SCORE & LEAD */
     #scoreBars { position:absolute; top:0; left:0; right:0; background:#eee; padding:10px 0; text-align:center; z-index:10; }
     .pill { display:inline-block; margin:0 10px; padding:6px 20px; border-radius:20px; font-family:sans-serif; font-size:16px; color:#fff; font-weight:bold; }
     .pill.blue { background:linear-gradient(to right,navy,blue); }
@@ -22,20 +18,15 @@
     .pill.purple { background:linear-gradient(to right,indigo,mediumorchid); }
     #leadText { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%) rotate(-15deg); font-size:32px; color:deeppink; text-shadow:0 0 8px hotpink; display:none; z-index:50; animation:leadShake 0.1s infinite alternate; }
     @keyframes leadShake { from{transform:translate(-3px,-3px) rotate(-15deg);} to{transform:translate(3px,3px) rotate(-15deg);} }
-    /* TETRIS CANVASES */
     #tetrisWrapper { position:absolute; top:60px; bottom:160px; left:0; right:0; display:flex; justify-content:center; align-items:flex-start; gap:10px; padding:5px; }
     canvas { background:#000; box-shadow:0 0 8px rgba(0,0,0,0.5); width:100%; max-width:300px; height:auto; touch-action:none; }
     canvas.player { border:3px solid blue; }
     canvas.cpu { border:3px solid red; }
-    /* CONTROLS */
     #controls { position:absolute; bottom:0; left:0; right:0; display:flex; justify-content:center; gap:40px; font-family:sans-serif; font-size:14px; background:rgba(255,255,255,0.8); padding:10px 0; z-index:10; }
     #holdBox { width:80px; height:80px; border:2px solid #000; }
-    /* MOBILE BUTTONS */
     #mobileControls { position:absolute; bottom:0; left:0; right:0; display:none; justify-content:center; flex-wrap:wrap; gap:10px; padding:10px; background:rgba(0,0,0,0.8); z-index:10; }
     #mobileControls button { width:60px; height:60px; font-size:24px; border:none; border-radius:8px; background:#444; color:#fff; }
-    /* ALERT */
     #tetrisOverlay { position:absolute; top:40%; left:50%; transform:translate(-50%,-50%); font-size:48px; color:yellow; text-shadow:0 0 10px orange; display:none; z-index:40; }
-    /* MOBILE LAYOUT */
     @media (max-width:600px) { #tetrisWrapper { flex-direction:column; } #controls { display:none; } #mobileControls { display:flex; } }
   </style>
 </head>
@@ -69,162 +60,43 @@
   <div id="tetrisOverlay">WOW TETRIS!</div>
   <script>
   (function(){
-    const p = new URLSearchParams(location.search);
-    const competition = (p.get('competition')||'Low').toLowerCase();
-    const valence = p.get('valence') || 'Positive';
-    const round = parseInt(p.get('round')) || 1;
-    const isMobile = /Mobi|Android|iPhone/i.test(navigator.userAgent);
+    const p=new URLSearchParams(location.search);
+    const competition=(p.get('competition')||'Low').toLowerCase();
+    const valence=p.get('valence')||'Positive';
+    const round=parseInt(p.get('round'))||1;
+    const isMobile=/Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 
-    const names = ['Ash','Jordan','Riley','Taylor'];
-    const cpuName = names[Math.floor(Math.random()*names.length)];
-    document.getElementById('cpuNamePill').textContent = cpuName;
+    const names=['Ash','Jordan','Riley','Taylor'];
+    const cpuName=names[Math.floor(Math.random()*names.length)];
+    document.getElementById('cpuNamePill').textContent=cpuName;
 
-    // CPU color based on competition
-    const cpuPill = document.getElementById('cpuPill');
-    const cpuCanvas = document.getElementById('cpuCanvas');
+    const cpuPill=document.getElementById('cpuPill');
+    const cpuCanvas=document.getElementById('cpuCanvas');
     if(competition==='low'){
-      cpuPill.classList.remove('red'); cpuPill.classList.add('purple');
-      cpuCanvas.style.borderColor = 'purple';
+      cpuPill.className='pill purple';
+      cpuCanvas.style.borderColor='purple';
     }
+    if(isMobile&&competition==='high'){
+      document.getElementById('playerCanvas').style.maxWidth='90vw';
+      cpuCanvas.style.maxWidth='60vw';
+    }
+    if(isMobile&&competition==='low') cpuCanvas.style.display='none';
 
-    // Mobile adjustments
-    if(isMobile && competition==='high'){
-      document.getElementById('playerCanvas').style.maxWidth = '90vw';
-      document.getElementById('cpuCanvas').style.maxWidth = '60vw';
-    }
-    if(isMobile && competition==='low'){
-      cpuCanvas.style.display = 'none';
-    }
-
-    // Loading screen
     let phase=0, timer=0;
-    const lo = document.getElementById('loadingOverlay');
-    const lt = document.getElementById('loadingText');
-    const lf = document.getElementById('loadingBarFg');
-    const loader = setInterval(()=>{
-      timer++;
-      if(phase===0){
-        lf.style.width = Math.min(100,(timer/4*25))+'%';
-        if(timer>=4){ phase=1; timer=0; lt.textContent='Opponent Found'; lf.style.width='100%'; }
-      } else if(timer>=1){
-        clearInterval(loader);
-        lo.style.display='none';
-        startCountdown();
-      }
-    },1000);
+    const lo=document.getElementById('loadingOverlay'), lt=document.getElementById('loadingText'), lf=document.getElementById('loadingBarFg');
+    const loader=setInterval(()=>{ timer++; if(phase===0){ lf.style.width=Math.min(100,(timer/4*25))+'%'; if(timer>=4){ phase=1; timer=0; lt.textContent='Opponent Found'; lf.style.width='100%'; }} else if(timer>=1){ clearInterval(loader); lo.style.display='none'; startCountdown(); } },1000);
+    const cdOv=document.getElementById('countdownOverlay');
+    function startCountdown(){ let c=3; cdOv.style.visibility='visible'; cdOv.textContent=c; const ci=setInterval(()=>{ c--; if(c>0) cdOv.textContent=c; else{ clearInterval(ci); cdOv.style.visibility='hidden'; last=performance.now(); requestAnimationFrame(frame);} },1000); }
 
-    const cdOv = document.getElementById('countdownOverlay');
-    function startCountdown(){
-      let c=3;
-      cdOv.style.visibility='visible';
-      cdOv.textContent = c;
-      const ci = setInterval(()=>{
-        c--;
-        if(c>0) cdOv.textContent = c;
-        else { clearInterval(ci); cdOv.style.visibility='hidden'; last = performance.now(); requestAnimationFrame(frame); }
-      },1000);
-    }
-
-    // Tetris logic
-    const SHAPES = { ... }; // omitted for brevity
-    const COLORS = { ... }; // omitted for brevity
-    function aggregateHeight(g){ ... }
-    function countHoles(g){ ... }
-    function bumpiness(g){ ... }
-
-    class TetrisBoard {
-      constructor(id,mode) {
-        this.ctx = document.getElementById(id).getContext('2d');
-        this.mode = mode;
-        this.grid = Array(20).fill().map(()=>Array(10).fill(0));
-        this.score = 0;
-        this.garbage = 0;
-        this.hold = null;
-        this.canHold = true;
-        this.prevShape = null;
-        this.gameOver = false;
-        this.cpuTimer = 0;
-        this.ready = (mode==='human');
-        this.readyTimer = 0;
-        this.readyDelay = (mode==='cpu'
-          ? (competition==='high' ? 100 : 1000)  // human-like hold delay
-          : 0
-        );
-        this.spawn();
-        this.dropInterval = (mode==='cpu'
-          ? (competition==='high' ? 200 : 1000)
-          : 500
-        );
-        this.acc = 0;
-        this.last = 0;
-      }
-      // rest of methods unchanged, except in update:
-      update(dt) {
-        if(this.mode==='cpu' && !this.ready) {
-          this.readyTimer += dt;
-          if(this.readyTimer >= this.readyDelay) this.ready = true;
-          else return;
-        }
-        if(this.gameOver) return;
-        this.acc += dt;
-        if(this.acc > this.dropInterval) {
-          this.acc = 0;
-          if(!this.move(0,1)) this.lock();
-        }
-        if(this.mode==='cpu' && this.cpuPlan) {
-          this.cpuTimer += dt;
-          const moveInterval = (competition==='high' ? 200 : 800);
-          if(this.cpuTimer > moveInterval) {
-            if(this.rot !== this.cpuPlan.rot) this.rotate();
-            else if(this.x < this.cpuPlan.x) this.move(1,0);
-            else if(this.x > this.cpuPlan.x) this.move(-1,0);
-            else {
-              if(competition==='high') this.hardDrop();
-              this.cpuTimer = 0;
-            }
-          }
-        }
-      }
-      // … other methods …
-    }
-
-    window.player = new TetrisBoard('playerCanvas','human');
-    window.cpu    = new TetrisBoard('cpuCanvas','cpu');
-    let last = performance.now();
-
-    function frame(ts) {
-      const dt = ts - last;
-      last = ts;
-      player.update(dt);
-      cpu.update(dt);
-
-      if(competition==='high') {
-        while(player.garbage > 0) {
-          cpu.grid.shift();
-          cpu.grid.push(Array(10).fill('G'));
-          player.garbage--;
-        }
-        while(cpu.garbage > 0) {
-          player.grid.shift();
-          player.grid.push(Array(10).fill('G'));
-          cpu.garbage--;
-        }
-      }
-
-      player.draw();
-      cpu.draw();
-      updateScores(player.score, cpu.score);
-
-      if(!player.gameOver && !cpu.gameOver) {
-        requestAnimationFrame(frame);
-      } else {
-        showChat();
-      }
-    }
-
-    // … rest unchanged …
-
-  })();
-  </script>
-</body>
-</html>
+    const SHAPES={
+      I:[[[1,1,1,1]],[[1],[1],[1],[1]]],
+      O:[[[1,1],[1,1]]],
+      T:[[[0,1,0],[1,1,1]],[[1,0],[1,1],[1,0]],[[1,1,1],[0,1,0]],[[0,1],[1,1],[0,1]]],
+      S:[[[0,1,1],[1,1,0]],[[1,0],[1,1],[0,1]]],
+      Z:[[[1,1,0],[0,1,1]],[[0,1],[1,1],[1,0]]],
+      J:[[[1,0,0],[1,1,1]],[[1,1],[1,0],[1,0]],[[1,1,1],[0,0,1]],[[0,1],[0,1],[1,1]]],
+      L:[[[0,0,1],[1,1,1]],[[1,0],[1,0],[1,1]],[[1,1,1],[1,0,0]],[[1,1],[0,1],[0,1]]]
+    };
+    const COLORS={ O:'blue', I:'purple', T:'orange', S:'pink', Z:'yellow', L:'red', J:'green', G:'gray' };
+    function aggregateHeight(g){ let h=0; for(let c=0;c<10;c++){ for(let r=0;r<20;r++){ if(g[r][c]){ h+=20-r; break; }}} return h; }
+    function countHoles(g){ let holes=0; for(let c=0;c<10;
