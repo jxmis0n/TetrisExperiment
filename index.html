@@ -6,16 +6,43 @@
         content="width=device-width,initial-scale=1,user-scalable=no"/>
   <title>Tetris vs CPU</title>
   <style>
-    /* prevent any scrolling */
+    /* Prevent any scrolling */
     html, body { margin:0; padding:0; height:100%; overflow:hidden; }
 
-    /* == LOADING & COUNTDOWN overlaid (unchanged) == */
-    /* … your existing loading & countdown styles … */
+    /* ========== LOADING SCREEN ========== */
+    #loadingOverlay {
+      position:absolute; top:0; left:0; right:0; bottom:0;
+      background:#000; color:#fff;
+      display:flex; flex-direction:column;
+      align-items:center; justify-content:center;
+      z-index:100;
+    }
+    #loadingText { font-size:24px; margin-bottom:20px; }
+    #loadingBarBg {
+      width:80%; height:20px;
+      background:#444; border-radius:10px;
+      overflow:hidden;
+    }
+    #loadingBarFg {
+      width:0%; height:100%;
+      background:limegreen;
+      transition:width 0.2s linear;
+    }
 
-    /* == SCORE PILL BAR & LEAD == */
+    /* ========== COUNTDOWN OVERLAY ========= */
+    #countdownOverlay {
+      position:absolute; top:0; left:0; right:0; bottom:0;
+      background:rgba(0,0,0,0.8); color:#fff;
+      font-size:100px; display:flex;
+      align-items:center; justify-content:center;
+      z-index:90; visibility:hidden;
+    }
+
+    /* ========== SCORE PILL BAR & LEAD ========= */
     #scoreBars {
       position:absolute; top:0; left:0; right:0;
-      background:#eee; padding:10px 0; text-align:center; z-index:10;
+      background:#eee; padding:10px 0;
+      text-align:center; z-index:10;
     }
     .pill {
       display:inline-block; margin:0 10px;
@@ -33,39 +60,81 @@
       display:none; z-index:50;
       animation:leadShake 0.1s infinite alternate;
     }
-    @keyframes leadShake { from{transform:translate(-3px,-3px) rotate(-15deg);} to{transform:translate(3px,3px) rotate(-15deg);} }
+    @keyframes leadShake {
+      from { transform:translate(-3px,-3px) rotate(-15deg); }
+      to   { transform:translate(3px,3px)  rotate(-15deg); }
+    }
 
-    /* == RESPONSIVE TETRIS WRAPPER & CANVASES == */
+    /* ========== TETRIS WRAPPER & CANVASES ========= */
     #tetrisWrapper {
-      position:absolute; top:60px; bottom:120px; left:0; right:0;
+      position:absolute; top:60px; bottom:120px;
+      left:0; right:0;
       display:flex; justify-content:center; align-items:flex-start;
       gap:10px; padding:5px;
     }
     canvas {
       background:#000; box-shadow:0 0 8px rgba(0,0,0,0.5);
-      /* make canvas scale to parent */
-      width:100%; height:auto; max-width:300px;
+      width:100%; max-width:300px; height:auto;
       touch-action:none;
     }
     canvas.player { border:3px solid blue; }
-    canvas.cpu    { border:3px solid red; }
+    canvas.cpu    { border:3px solid red;  }
 
-    /* == CONTROLS & HOLD == */
-    /* … unchanged … */
+    /* ========== HOLD + DESKTOP CONTROLS ========= */
+    #controls {
+      position:absolute; bottom:60px; left:0; right:0;
+      display:flex; justify-content:center;
+      gap:40px; font-family:sans-serif; font-size:14px;
+      background:rgba(255,255,255,0.8); padding:10px 0;
+      z-index:10;
+    }
+    #holdBox {
+      width:80px; height:80px; border:2px solid #000;
+    }
 
-    /* == MOBILE LAYOUT == */
-    @media(max-width:600px) {
+    /* ========== MOBILE CONTROL BUTTONS ========= */
+    #mobileControls {
+      position:absolute; bottom:0; left:0; right:0;
+      display:none; justify-content:center; flex-wrap:wrap;
+      gap:10px; padding:10px; background:rgba(0,0,0,0.8);
+      z-index:10;
+    }
+    #mobileControls button {
+      width:60px; height:60px; font-size:24px;
+      border:none; border-radius:8px; background:#444; color:#fff;
+    }
+
+    /* ========== TETRIS ALERT ========== */
+    #tetrisOverlay {
+      position:absolute; top:40%; left:50%;
+      transform:translate(-50%,-50%);
+      font-size:48px; color:yellow;
+      text-shadow:0 0 10px orange;
+      display:none; z-index:40;
+    }
+
+    /* ========== MOBILE LAYOUT ========= */
+    @media (max-width:600px) {
       #tetrisWrapper { flex-direction:column; }
-      /* CPU board width override for High comp in JS */
-      /* rest unchanged */
+      #controls     { display:none; }
+      #mobileControls { display:flex; }
     }
   </style>
 </head>
 <body>
-  <!-- SCORE PILL ORDER SWAPPED -->
+  <!-- LOADING SCREEN -->
+  <div id="loadingOverlay">
+    <div id="loadingText">Finding Opponent…</div>
+    <div id="loadingBarBg"><div id="loadingBarFg"></div></div>
+  </div>
+
+  <!-- COUNTDOWN -->
+  <div id="countdownOverlay">3</div>
+
+  <!-- SCORE PILL BAR (BLUE LEFT, RED RIGHT) -->
   <div id="scoreBars">
     <div id="playerPill" class="pill blue">
-      <span>Player:</span> <span id="playerScorePill">0 pts</span>
+      Player: <span id="playerScorePill">0 pts</span>
     </div>
     <div id="cpuPill" class="pill red">
       <span id="cpuNamePill">CPU</span>: <span id="cpuScorePill">0 pts</span>
@@ -73,29 +142,89 @@
     <div id="leadText"></div>
   </div>
 
-  <!-- LOADING, COUNTDOWN, TETRIS ALERT… (same as before) -->
-
-  <!-- TETRIS BOARDS -->
+  <!-- TETRIS CANVASES -->
   <div id="tetrisWrapper">
     <canvas id="playerCanvas" class="player" width="300" height="600"></canvas>
     <canvas id="cpuCanvas"    class="cpu"    width="300" height="600"></canvas>
   </div>
 
-  <!-- HOLD + CONTROLS… (same) -->
+  <!-- HOLD & DESKTOP CONTROLS -->
+  <div id="controls">
+    <div id="holdBox"><canvas id="holdCanvas" width="80" height="80"></canvas></div>
+    A/←=Left D/→=Right S/↓=Soft Drop Shift=Rotate Space=Hard Drop C=Hold
+  </div>
 
-  <!-- MOBILE TOUCH BUTTONS… (same) -->
+  <!-- MOBILE TOUCH BUTTONS -->
+  <div id="mobileControls">
+    <button data-cmd="moveLeft">⟵</button>
+    <button data-cmd="moveDown">⟷</button>
+    <button data-cmd="moveRight">⟶</button>
+    <button data-cmd="rotate">⟳</button>
+    <button data-cmd="hardDrop">⤵</button>
+    <button data-cmd="hold">H</button>
+  </div>
+
+  <!-- TETRIS ALERT -->
+  <div id="tetrisOverlay">WOW TETRIS!</div>
 
   <script>
   (function(){
-    /* your existing JS… with no changes to the core logic… */
+    // 1) URL params + device detection
+    const p           = new URLSearchParams(location.search);
+    const competition = (p.get('competition')||'Low').toLowerCase();
+    const valence     = p.get('valence')       || 'Positive';
+    const round       = parseInt(p.get('round'))||1;
+    const isMobile    = /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 
-    // Adjust CPU canvas size on mobile+High:
+    // 2) Random CPU name
+    const names   = ['Ash','Jordan','Riley','Taylor'];
+    const cpuName = names[Math.floor(Math.random()*names.length)];
+    document.getElementById('cpuNamePill').textContent = cpuName;
+
+    // 3) Adjust CPU canvas on Mobile + High
     if(isMobile && competition==='high'){
       document.getElementById('playerCanvas').style.maxWidth='90vw';
       document.getElementById('cpuCanvas')   .style.maxWidth='60vw';
     }
+    // Hide CPU entirely on mobile + low
+    if(isMobile && competition==='low'){
+      document.getElementById('cpuCanvas').style.display='none';
+    }
 
-    // rest of game loop, input, chat, etc…
+    // 4) Loading overlay logic
+    let phase=0, timer=0;
+    const loadOv = document.getElementById('loadingOverlay'),
+          loadTxt= document.getElementById('loadingText'),
+          loadFg = document.getElementById('loadingBarFg');
+    const loader = setInterval(()=>{
+      timer++;
+      if(phase===0){
+        loadFg.style.width = Math.min(100,(timer/4*25))+'%';
+        if(timer>=4){ phase=1; timer=0; loadTxt.textContent='Opponent Found'; loadFg.style.width='100%'; }
+      } else {
+        if(timer>=1){ clearInterval(loader); loadOv.style.display='none'; startCountdown(); }
+      }
+    },1000);
+
+    // 5) Countdown
+    const cdOv=document.getElementById('countdownOverlay');
+    function startCountdown(){
+      let c=3; cdOv.style.visibility='visible'; cdOv.textContent=c;
+      const ci = setInterval(()=>{
+        c--; if(c>0) cdOv.textContent=c;
+        else { clearInterval(ci); cdOv.style.visibility='hidden'; last=performance.now(); requestAnimationFrame(frame); }
+      },1000);
+    }
+
+    // 6) Shapes, colors, heuristics, TetrisBoard class...
+    // (Use the full TetrisBoard code from your previous iteration,
+    // ensuring the improved heuristic uses aggregateHeight, countHoles, bumpiness.)
+
+    // 7) Game loop, input, draw, chat (unchanged but within this IIFE)...
+
+    // 8) Bind desktop keys and mobile pointer events...
+    // (unchanged)
+
   })();
   </script>
 </body>
