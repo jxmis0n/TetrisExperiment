@@ -1,30 +1,33 @@
-EMBEDDING CODE
-
-
 Qualtrics.SurveyEngine.addOnReady(function() {
   var competition = "${e://Field(Competition)}";
   var valence     = "${e://Field(Seq1)}";
   var round       = 1;
   var qid         = this.questionId;
 
-  var base = "https://jxmis0n.github.io/TetrisExperiment/index.html";
-  var src  = base
+  // build a 100% wide, 75vh tall iframe
+  var src = "https://jxmis0n.github.io/TetrisExperiment/"
     + "?competition=" + encodeURIComponent(competition)
     + "&valence="     + encodeURIComponent(valence)
     + "&round="       + round;
 
   var html = ''
-    + '<h3>Tetris vs CPU (' + competition + ' Competition)</h3>'
-    + '<iframe src="' + src + '" '
-    +   'width="800" height="900" frameborder="0" allowfullscreen>'
-    + '</iframe>';
+    + '<div style="font-family:sans-serif; width:100vh; height:70vh; overflow:hidden; user-scalable=no">'
+    +   '<h3 style="font-size:1.2em; margin:4px 0;">'
+    +     'Tetris vs CPU ('+competition+' Competition)'
+    +   '</h3>'
+    +   '<iframe '
+    +     'src="' + src + '" '
+    +     'style="width:100%; height:calc(100% - 30px); border:0; display:block;" '
+    +     'allowfullscreen>'
+    +   '</iframe>'
+    + '</div>';
 
   jQuery("#" + qid + " .QuestionText").html(html);
 
   window.addEventListener("message", function(evt) {
     var d = evt.data;
-    if(!d || d.type!=="chatResponse" || d.round!==round) return;
-    Qualtrics.SurveyEngine.setEmbeddedData("ChatResponse1", d.text);
+    if (!d || d.type !== "chatResponse" || d.round !== round) return;
+    Qualtrics.SurveyEngine.setEmbeddedData("ChatResponse" + round, d.text);
     jQuery("#NextButton").click();
   });
 });
