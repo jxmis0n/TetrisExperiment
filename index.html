@@ -3,179 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
-  <title>Tetris vs CPU</title>
-  <style>
-    /* Reset and Base Styles */
-    html, body {
-      margin: 0;
-      padding: 0;
-      width: 100%;
-      height: 100%;
-      overflow: hidden;
-      background: #000;
-      color: #fff;
-      font-family: Arial, sans-serif;
-    }
-
-    /* Loading Overlay */
-    #loadingOverlay {
-      position: absolute; inset: 0;
-      background: #000;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      z-index: 100;
-    }
-    #loadingText {
-      font-size: 24px;
-      margin-bottom: 12px;
-    }
-    #loadingBarBg {
-      width: 80%;
-      height: 16px;
-      background: #444;
-      border-radius: 8px;
-      overflow: hidden;
-    }
-    #loadingBarFg {
-      width: 0;
-      height: 100%;
-      background: limegreen;
-      transition: width 4s linear;
-    }
-
-    /* Countdown Overlay */
-    #countdownOverlay {
-      position: absolute; inset: 0;
-      background: rgba(0,0,0,0.8);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 96px;
-      visibility: hidden;
-      z-index: 90;
-    }
-
-    /* Score Bar */
-    #scoreBars {
-      position: absolute; top: 0; left: 0; right: 0;
-      background: #111;
-      padding: 8px;
-      text-align: center;
-      z-index: 80;
-    }
-    .pill {
-      display: inline-block;
-      margin: 0 8px;
-      padding: 4px 12px;
-      border-radius: 12px;
-      font-size: 14px;
-      font-weight: bold;
-    }
-    .pill.blue   { background: navy; }
-    .pill.red    { background: maroon; }
-    .pill.purple { background: indigo; }
-
-    /* Lead Text Animation */
-    #leadText {
-      position: absolute;
-      top: 50%; left: 50%;
-      transform: translate(-50%, -50%) rotate(-10deg);
-      font-size: 32px;
-      color: hotpink;
-      text-shadow: 0 0 8px deeppink;
-      display: none;
-      z-index: 85;
-      animation: shake 0.1s infinite alternate;
-    }
-    @keyframes shake {
-      from { transform: translate(-52%, -48%) rotate(-10deg); }
-      to   { transform: translate(-48%, -52%) rotate(-10deg); }
-    }
-
-    /* Game Area */
-    #tetrisWrapper {
-      position: absolute;
-      top: 60px; bottom: 160px;
-      left: 0; right: 0;
-      display: flex;
-      justify-content: center;
-      align-items: flex-start;
-      gap: 12px;
-      padding: 8px;
-    }
-    canvas {
-      background: #000;
-      width: 100%; max-width: 300px;
-      height: auto;
-      box-shadow: 0 0 6px rgba(255,255,255,0.2);
-      touch-action: none;
-    }
-    canvas.player { border: 3px solid blue; }
-    canvas.cpu    { border: 3px solid red; }
-
-    /* Controls */
-    #controls {
-      position: absolute;
-      bottom: 0; left: 0; right: 0;
-      background: rgba(255,255,255,0.9);
-      padding: 8px;
-      display: flex;
-      justify-content: center;
-      gap: 16px;
-      font-size: 14px;
-      z-index: 80;
-    }
-    #holdBox {
-      width: 64px; height: 64px;
-      border: 2px solid #000;
-      background: #111;
-    }
-
-    /* Mobile Controls */
-    #mobileControls {
-      position: absolute; bottom: 0; left: 0; right: 0;
-      display: none;
-      justify-content: center;
-      gap: 8px;
-      padding: 8px;
-      background: rgba(0,0,0,0.8);
-      z-index: 80;
-    }
-    #mobileControls button {
-      width: 48px; height: 48px;
-      font-size: 20px;
-      background: #333;
-      color: #fff;
-      border: none;
-      border-radius: 8px;
-    }
-
-    /* Alert */
-    #tetrisOverlay {
-      position: absolute;
-      top: 40%; left: 50%;
-      transform: translate(-50%, -50%);
-      font-size: 36px;
-      color: yellow;
-      text-shadow: 0 0 8px orange;
-      display: none;
-      z-index: 85;
-    }
-
-    /* Responsive Mobile Layout */
-    @media (max-width: 600px) {
-      #tetrisWrapper { flex-direction: column; }
-      #controls { display: none; }
-      #mobileControls { display: flex; }
-    }
-  </style>
+  <title>Tetris vs</title>
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
   <!-- Loading Screen -->
   <div id="loadingOverlay">
-    <div id="loadingText">Finding Opponent&hellip;</div>
+    <div id="loadingText">Finding Opponent…</div>
     <div id="loadingBarBg"><div id="loadingBarFg"></div></div>
   </div>
 
@@ -185,486 +19,130 @@
   <!-- Score Bar -->
   <div id="scoreBars">
     <span id="playerPill" class="pill blue">Player: <b><span id="playerScorePill">0</span> pts</b></span>
-    <span id="cpuPill"    class="pill red">CPU:    <b><span id="cpuScorePill">0</span> pts</b></span>
+    <span id="cpuPill"    class="pill red">Opponent:    <b><span id="cpuScorePill">0</span> pts</b></span>
   </div>
-
   <!-- Lead Message -->
   <div id="leadText"></div>
+  
+  <!-- Main Game Area: Controls + Game Canvases + Instructions -->
+  <div id="mainGameArea">
+    <!-- Desktop Controls & Hold Box -->
+    <div id="controls">
+      <div class="hold-label">HELD PIECE</div>
+      <div id="holdBox"><canvas id="holdCanvas" width="64" height="64"></canvas></div>
+      <button id="holdButton">HOLD PIECE</button>
+      <div class="moveButtons">
+        <button id="moveLeft">← A</button>
+        <button id="moveDown">↓ B</button>
+        <button id="moveRight">→ C</button>
+      </div>
+      <button id="rotateButton">↑ Shift ROTATE</button>
+      <button id="dropButton">DROP</button>
+    </div>
+    
+    <!-- Game Canvases -->
+    <div id="tetrisWrapper">
+      <canvas id="playerCanvas" class="player" width="300" height="600"></canvas>
+      <div id="scoreBarVertical">
+        <div class="score-bar-container">
+          <div class="score-bar-wrapper">
+            <span class="score-label score-player" id="scoreBarPlayerLabel">0</span>
+            <div class="score-bar player">
+              <div class="score-bar-inner" id="scoreBarPlayerInner"></div>
+            </div>
+            <span class="score-name-player">PLAYER</span>
+          </div>
+          <div class="score-bar-wrapper">
+            <span class="score-label score-cpu" id="scoreBarCpuLabel">0</span>
+            <div class="score-bar cpu">
+              <div class="score-bar-inner" id="scoreBarCpuInner"></div>
+            </div>
+            <span class="score-name-cpu">ASH</span>
+          </div>
+        </div>
+      </div>
+      <canvas id="cpuCanvas" class="cpu" width="300" height="600"></canvas>
+    </div>
 
-  <!-- Game Canvases -->
-  <div id="tetrisWrapper">
-    <canvas id="playerCanvas" class="player" width="300" height="600"></canvas>
-    <canvas id="cpuCanvas"    class="cpu"    width="300" height="600"></canvas>
-  </div>
-
-  <!-- Desktop Controls & Hold Box -->
-  <div id="controls">
-    <div id="holdBox"><canvas id="holdCanvas" width="64" height="64"></canvas></div>
-    A/←  D/→  S/↓  Shift  Space  C
-  </div>
-
-  <!-- Mobile Touch Buttons -->
+    <!-- Solo Mode Instructions -->
+    <div id="soloInstructions">
+      <h2>How to Play Tetris</h2>
+      <div class="instruction-grid">
+        <div class="instruction-item">
+          <span class="key-icon">←→</span>
+          <span class="instruction-text">Move left/right</span>
+        </div>
+        <div class="instruction-item">
+          <span class="key-icon">↑</span>
+          <span class="instruction-text">Rotate piece</span>
+        </div>
+        <div class="instruction-item">
+          <span class="key-icon">↓</span>
+          <span class="instruction-text">Soft drop</span>
+        </div>
+        <div class="instruction-item">
+          <span class="key-icon">SPACE</span>
+          <span class="instruction-text">Hard drop</span>
+        </div>
+        <div class="instruction-item">
+          <span class="key-icon">C</span>
+          <span class="instruction-text">Hold piece</span>
+        </div>
+      </div>
+      <p class="goal-text">Clear horizontal lines by filling them completely. Clear 4 lines at once for a TETRIS!</p>
+    </div>
+  </div><!-- Mobile Touch Buttons -->
   <div id="mobileControls">
-    <button data-cmd="moveLeft">⟵</button>
-    <button data-cmd="moveDown">⟷</button>
-    <button data-cmd="moveRight">⟶</button>
-    <button data-cmd="rotate">⟳</button>
-    <button data-cmd="hardDrop">⤵</button>
-    <button data-cmd="hold">H</button>
+    <div class="mobile-control-row">
+      <button data-cmd="hold">HOLD PIECE</button>
+    </div>
+    <div class="mobile-control-row">
+      <button data-cmd="moveLeft">←</button>
+      <button data-cmd="moveDown">↓</button>
+      <button data-cmd="moveRight">→</button>
+    </div>
+    <div class="mobile-control-row">
+      <button data-cmd="rotate">↑ Shift ROTATE</button>
+    </div>
+    <div class="mobile-control-row">
+      <button data-cmd="hardDrop">DROP</button>
+    </div>
+  </div>
+  <!-- Mobile Instructions -->
+  <div id="mobileInstructions">
+    USE THE BUTTONS BELOW TO PLAY TETRIS.
+  </div>
+
+  <!-- Mobile Hold Box -->
+  <div id="mobileHoldBox">
+    HELD PIECE
+  </div>
+
+  <!-- Chat Interface -->
+  <div id="chatInterface">
+    <div id="chatHeader">
+      <span id="chatTitle">Chat with Ash</span>
+      <button id="chatClose">×</button>
+    </div>
+    <div id="chatMessages">
+      <div id="typingIndicator">
+        <span class="typing-dots">
+          <span class="dot"></span>
+          <span class="dot"></span>
+          <span class="dot"></span>
+        </span>
+        <span class="typing-text">Ash is typing...</span>
+      </div>
+    </div>
+    <div id="chatInput">
+      <input type="text" id="messageInput" placeholder="Type your message..." disabled>
+      <button id="sendButton" disabled>Send</button>
+    </div>
   </div>
 
   <!-- Tetris Alert -->
   <div id="tetrisOverlay">WOW TETRIS!</div>
 
-  <script>
-  (function() {
-    // --- Parameters & Device Detection ---
-    const params      = new URLSearchParams(location.search);
-    const competition = (params.get('competition') || 'Low').toLowerCase();
-    const valence     = params.get('valence')   || 'Positive';
-    const round       = parseInt(params.get('round')) || 1;
-    const isMobile    = /Mobi|Android|iPhone|iPad|iPod/.test(navigator.userAgent);
-
-    // --- CPU Name & Pill Color ---
-    const names   = ['Ash', 'Jordan', 'Riley', 'Taylor'];
-    const cpuName = names[Math.floor(Math.random() * names.length)];
-    const cpuPill = document.getElementById('cpuPill');
-    cpuPill.innerHTML = `${cpuName}: <b><span id='cpuScorePill'>0</span> pts</b>`;
-    if (competition === 'low') {
-      cpuPill.className = 'pill purple';
-      document.getElementById('cpuCanvas').style.borderColor = 'purple';
-    }
-
-    // --- Responsive Canvas Sizing ---
-    if (isMobile && competition === 'high') {
-      document.getElementById('playerCanvas').style.maxWidth = '90vw';
-      document.getElementById('cpuCanvas'   ).style.maxWidth = '60vw';
-    }
-    if (isMobile && competition === 'low') {
-      document.getElementById('cpuCanvas').style.display = 'none';
-    }
-
-    // --- Loading Sequence ---
-    const loadingBarFg   = document.getElementById('loadingBarFg');
-    const loadingOverlay = document.getElementById('loadingOverlay');
-    const loadingText    = document.getElementById('loadingText');
-
-    // Animate bar to full over 4 seconds
-    requestAnimationFrame(() => loadingBarFg.style.width = '100%');
-
-    // After 4s, show "Opponent Found" for 1s, then hide overlay and start countdown
-    setTimeout(() => {
-      loadingText.textContent = 'Opponent Found';
-      setTimeout(() => {
-        loadingOverlay.style.display = 'none';
-        startCountdown();
-      }, 1000);
-    }, 4000);
-
-    // --- Countdown for Game Start ---
-    const countdownOverlay = document.getElementById('countdownOverlay');
-    function startCountdown() {
-      let count = 3;
-      countdownOverlay.style.visibility = 'visible';
-      countdownOverlay.textContent = count;
-      const timer = setInterval(() => {
-        count--;
-        if (count > 0) {
-          countdownOverlay.textContent = count;
-        } else {
-          clearInterval(timer);
-          countdownOverlay.style.visibility = 'hidden';
-          lastTime = performance.now();
-          requestAnimationFrame(gameLoop);
-        }
-      }, 1000);
-    }
-
-    // --- Tetris Logic (Shapes, Colors, Heuristics, Board Class) ---
-    // -- Define SHAPES, COLORS, functions aggregateHeight, countHoles, bumpiness --
-    // -- Define TetrisBoard class with spawn, move, rotate, update, draw, hold, receiveGarbage --
-        // --- Full TetrisBoard Implementation ---
-    const SHAPES = {
-      I: [ [[1,1,1,1]], [[1],[1],[1],[1]] ],
-      O: [ [[1,1],[1,1]] ],
-      T: [ [[0,1,0],[1,1,1]], [[1,0],[1,1],[1,0]], [[1,1,1],[0,1,0]], [[0,1],[1,1],[0,1]] ],
-      S: [ [[0,1,1],[1,1,0]], [[1,0],[1,1],[0,1]] ],
-      Z: [ [[1,1,0],[0,1,1]], [[0,1],[1,1],[1,0]] ],
-      J: [ [[1,0,0],[1,1,1]], [[1,1],[1,0],[1,0]], [[1,1,1],[0,0,1]], [[0,1],[0,1],[1,1]] ],
-      L: [ [[0,0,1],[1,1,1]], [[1,0],[1,0],[1,1]], [[1,1,1],[1,0,0]], [[1,1],[0,1],[0,1]] ]
-    };
-    const COLORS = { O:'blue', I:'purple', T:'orange', S:'pink', Z:'yellow', L:'red', J:'green', G:'gray' };
-
-    function aggregateHeight(grid) {
-      let h=0;
-      for (let c=0; c<10; c++) {
-        for (let r=0; r<20; r++) {
-          if (grid[r][c]) { h += 20-r; break; }
-        }
-      }
-      return h;
-    }
-    function countHoles(grid) {
-      let holes=0;
-      for (let c=0; c<10; c++) {
-        let seen=false;
-        for (let r=0; r<20; r++) {
-          if (grid[r][c]) seen=true;
-          else if (seen) holes++;
-        }
-      }
-      return holes;
-    }
-    function bumpiness(grid) {
-      const heights=[];
-      for (let c=0; c<10; c++) {
-        let h=0;
-        for (let r=0; r<20; r++) if (grid[r][c]) { h=20-r; break; }
-        heights.push(h);
-      }
-      let b=0;
-      for (let i=0; i<9; i++) b += Math.abs(heights[i]-heights[i+1]);
-      return b;
-    }
-
-    class TetrisBoard {
-      constructor(id, mode) {
-        this.ctx = document.getElementById(id).getContext('2d');
-        this.mode = mode;
-        this.grid = Array.from({length:20}, ()=>Array(10).fill(0));
-        this.score = 0;
-        this.garbage = 0;
-        this.hold = null;
-        this.canHold = true;
-        this.prevShape = null;
-        this.gameOver = false;
-        this.cpuTimer = 0;
-        this.ready = (mode==='human');
-        this.readyTimer = 0;
-        this.readyDelay = mode==='cpu'
-          ? (competition==='high'
-             ? Math.random()*100 + 100
-             : Math.random()*500 + 500)
-          : 0;
-        this.spawn();
-        this.dropInterval = mode==='cpu'
-          ? (competition==='high' ? 200 : 1000)
-          : 500;
-        this.acc = 0;
-      }
-      spawn() {
-        const keys = Object.keys(SHAPES);
-        let p;
-        do { p = keys[Math.floor(Math.random()*keys.length)]; }
-        while (p===this.prevShape);
-        this.prevShape = p;
-        this.shape = SHAPES[p];
-        this.rot = 0;
-        this.mat = this.shape[0];
-        this.x = Math.floor((10 - this.mat[0].length)/2);
-        this.y = 0;
-        this.canHold = true;
-        if (!this.valid(this.mat, this.x, this.y)) this.gameOver = true;
-        if (this.mode==='cpu') this.planCPU();
-      }
-      valid(mat,x,y) {
-        for (let r=0; r<mat.length; r++) for (let c=0; c<mat[r].length; c++) {
-          if (!mat[r][c]) continue;
-          const X = x+c, Y = y+r;
-          if (X<0||X>=10||Y<0||Y>=20||this.grid[Y][X]) return false;
-        }
-        return true;
-      }
-      clearLines() {
-        const before = this.grid.length;
-        this.grid = this.grid.filter(row => row.some(v=>v===0));
-        const L = 20 - this.grid.length;
-        while (this.grid.length<20) this.grid.unshift(Array(10).fill(0));
-        return L;
-      }
-      lock() {
-        for (let r=0; r<this.mat.length; r++) for (let c=0; c<this.mat[r].length; c++) {
-          if (this.mat[r][c]) this.grid[this.y+r][this.x+c] = this.prevShape;
-        }
-        const L = this.clearLines();
-        if (L) {
-          this.score += L*100;
-          if (competition==='high') this.garbage += L;
-          if (competition==='high' && L>=4) triggerTetrisAlert();
-        }
-        this.spawn();
-      }
-      move(dx,dy) {
-        if (this.valid(this.mat, this.x+dx, this.y+dy)) {
-          this.x += dx;
-          this.y += dy;
-          return true;
-        }
-        return false;
-      }
-      rotate() {
-        const nr = (this.rot+1) % this.shape.length;
-        const nm = this.shape[nr];
-        if (this.valid(nm, this.x, this.y)) {
-          this.rot = nr;
-          this.mat = nm;
-        }
-      }
-      hardDrop() {
-        while (this.move(0,1));
-        this.lock();
-      }
-      planCPU() {
-        let best=Infinity, plan={};
-        for (let r=0; r<this.shape.length; r++) {
-          const mat = this.shape[r];
-          const w = mat[0].length;
-          for (let x=0; x<=10-w; x++) {
-            let y=0;
-            while (this.valid(mat,x,y)) y++;
-            y--;
-            if (y<0) continue;
-            const g = this.grid.map(row=>row.slice());
-            for (let rr=0; rr<mat.length; rr++) for (let cc=0; cc<mat[rr].length; cc++) {
-              if (mat[rr][cc]) g[y+rr][x+cc] = 1;
-            }
-            const lines = 20 - g.filter(rw=>rw.every(v=>v!==0)).length;
-            const score = aggregateHeight(g)
-                        + countHoles(g)*1.5
-                        + bumpiness(g)*0.5
-                        - lines*10;
-            if (score < best) {
-              best = score;
-              plan = {rot:r, x, y};
-            }
-          }
-        }
-        this.cpuPlan = plan;
-      }
-      receiveGarbage(rows) {
-        for (let i=0; i<rows; i++) {
-          this.grid.shift();
-          this.grid.push(Array(10).fill('G'));
-        }
-      }
-      update(dt) {
-        if (this.mode==='cpu' && !this.ready) {
-          this.readyTimer += dt;
-          if (this.readyTimer >= this.readyDelay) this.ready = true;
-          else return;
-        }
-        if (this.gameOver) return;
-        this.acc += dt;
-        if (this.acc > this.dropInterval) {
-          this.acc = 0;
-          if (!this.move(0,1)) this.lock();
-        }
-        if (this.mode==='cpu' && this.cpuPlan) {
-          this.cpuTimer += dt;
-          const interval = competition==='high'?200:800;
-          if (this.cpuTimer > interval) {
-            if (this.rot !== this.cpuPlan.rot) this.rotate();
-            else if (this.x < this.cpuPlan.x) this.move(1,0);
-            else if (this.x > this.cpuPlan.x) this.move(-1,0);
-            else {
-              if (competition==='high') this.hardDrop();
-              this.cpuTimer = 0;
-            }
-          }
-        }
-      }
-      draw() {
-        const ctx = this.ctx;
-        ctx.clearRect(0,0,300,600);
-        for (let r=0; r<20; r++) for (let c=0; c<10; c++) {
-          if (this.grid[r][c]) {
-            ctx.fillStyle = COLORS[this.grid[r][c]];
-            ctx.fillRect(c*30, r*30, 30,30);
-          }
-          ctx.strokeStyle='#333';
-          ctx.strokeRect(c*30, r*30, 30,30);
-        }
-        if (!this.gameOver) {
-          ctx.fillStyle = COLORS[this.prevShape];
-          for (let r=0; r<this.mat.length; r++) for (let c=0; c<this.mat[r].length; c++) {
-            if (this.mat[r][c]) {
-              ctx.fillRect((this.x+c)*30, (this.y+r)*30, 30,30);
-              ctx.strokeRect((this.x+c)*30, (this.y+r)*30, 30,30);
-            }
-          }
-        }
-        this.drawHold();
-      }
-      drawHold() {
-        const hc = document.getElementById('holdCanvas');
-        const ctx = hc.getContext('2d');
-        ctx.clearRect(0,0,64,64);
-        if (!this.hold) return;
-        const mat = SHAPES[this.hold][0];
-        const sz = 64 / mat.length;
-        ctx.fillStyle = COLORS[this.hold];
-        for (let r=0; r<mat.length; r++) for (let c=0; c<mat[r].length; c++) {
-          if (mat[r][c]) {
-            ctx.fillRect(c*sz, r*sz, sz,sz);
-            ctx.strokeRect(c*sz, r*sz, sz,sz);
-          }
-        }
-      }
-    }
-
-    // --- Initialize Boards & Start Loop ---
-    window.player = new TetrisBoard('playerCanvas', 'human');
-    window.cpu    = new TetrisBoard('cpuCanvas',    'cpu');
-    let lastTime = performance.now();
-
-    function gameLoop(timestamp) {
-      const dt = timestamp - lastTime;
-      lastTime = timestamp;
-      player.update(dt);
-      cpu.update(dt);
-
-      if (competition === 'high') {
-        // Send all garbage rows
-        while (player.garbage > 0) { cpu.receiveGarbage(1); player.garbage--; }
-        while (cpu.garbage > 0)    { player.receiveGarbage(1); cpu.garbage--; }
-      }
-
-      player.draw();
-      cpu.draw();
-      updateScores(player.score, cpu.score);
-
-      if (!player.gameOver && !cpu.gameOver) {
-        requestAnimationFrame(gameLoop);
-      } else {
-        showChat();
-      }
-    }
-
-    // --- Input Handling & Utilities (updateScores, triggerTetrisAlert, showChat) ---
-        // --- Input Handling & Utilities ---
-    
-    // Update score pills and show lead text
-    function updateScores(p, c) {
-      document.getElementById('playerScorePill').textContent = p;
-      document.getElementById('cpuScorePill')   .textContent = c;
-      const lead = document.getElementById('leadText');
-      if (competition === 'high') {
-        if (p > c && updateScores.last !== 'p') {
-          lead.textContent = 'PLAYER TAKES THE LEAD!!';
-          lead.style.display = 'block';
-          setTimeout(() => lead.style.display = 'none', 3000);
-          updateScores.last = 'p';
-        }
-        if (c > p && updateScores.last !== 'c') {
-          lead.textContent = cpuName + ' TAKES THE LEAD!!';
-          lead.style.display = 'block';
-          setTimeout(() => lead.style.display = 'none', 3000);
-          updateScores.last = 'c';
-        }
-      }
-    }
-    updateScores.last = null;
-
-    // Flash a TETRIS alert
-    function triggerTetrisAlert() {
-      const overlay = document.getElementById('tetrisOverlay');
-      overlay.style.display = 'block';
-      setTimeout(() => overlay.style.display = 'none', 1500);
-    }
-
-    // Show chat box and post response
-    function showChat() {
-      const box = document.createElement('div');
-      Object.assign(box.style, {
-        position: 'absolute',
-        bottom: '12px',
-        left: '50%',
-        transform: 'translateX(-50%)',
-        background: 'rgba(255,255,255,0.9)',
-        padding: '8px',
-        borderRadius: '8px',
-        zIndex: '90',
-        fontFamily: 'Arial, sans-serif'
-      });
-      const msg = document.createElement('div');
-      let text = 'That was something.';
-      if (valence === 'Positive') text = 'Thanks for playing. That was great.';
-      if (valence === 'Negative') text = 'Lol. I beat you. You lost.';
-      msg.textContent = cpuName + ': ' + text;
-      msg.style.marginBottom = '6px';
-      box.appendChild(msg);
-      const inp = document.createElement('input');
-      inp.type = 'text';
-      inp.placeholder = 'Your response…';
-      inp.style.width = '220px';
-      box.appendChild(inp);
-      document.body.appendChild(box);
-      inp.focus();
-      inp.addEventListener('keydown', function(e) {
-        if (e.key === 'Enter' && this.value.trim()) {
-          window.parent.postMessage({
-            type: 'chatResponse',
-            round: round,
-            valence: valence,
-            text: this.value.trim()
-          }, '*');
-          this.disabled = true;
-          this.style.opacity = '0.5';
-        }
-      });
-    }
-
-    // Desktop keyboard controls
-    document.addEventListener('keydown', e => {
-      if (player.gameOver) return;
-      switch (e.key) {
-        case 'a': case 'ArrowLeft':  player.move(-1,0); break;
-        case 'd': case 'ArrowRight': player.move(1,0);  break;
-        case 's': case 'ArrowDown':  player.move(0,1);  break;
-        case ' ':                   player.hardDrop();  break;
-        case 'c':                   player.hold();      break;
-      }
-      if (e.code === 'ShiftLeft' || e.code === 'ShiftRight') player.rotate();
-    });
-
-    // Mouse/touch drag & tap on player canvas
-    let dragStartX = null;
-    const pc = document.getElementById('playerCanvas');
-    pc.addEventListener('pointerdown', e => {
-      if (player.gameOver) return;
-      dragStartX = e.clientX;
-      pc.setPointerCapture(e.pointerId);
-    });
-    pc.addEventListener('pointermove', e => {
-      if (dragStartX === null) return;
-      const dx = e.clientX - dragStartX;
-      const cell = pc.clientWidth / 10;
-      if (dx > cell)  { player.move(1,0);  dragStartX = e.clientX; }
-      if (dx < -cell) { player.move(-1,0); dragStartX = e.clientX; }
-    });
-    pc.addEventListener('pointerup', e => {
-      if (dragStartX !== null) {
-        if (Math.abs(e.clientX - dragStartX) < 5) player.rotate();
-        dragStartX = null;
-      }
-    });
-
-    // Mobile control buttons
-    document.querySelectorAll('#mobileControls button').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const cmd = btn.dataset.cmd;
-        switch (cmd) {
-          case 'moveLeft':   player.move(-1,0); break;
-          case 'moveDown':   player.move(0,1);  break;
-          case 'moveRight':  player.move(1,0);  break;
-          case 'rotate':     player.rotate();   break;
-          case 'hardDrop':   player.hardDrop(); break;
-          case 'hold':       player.hold();     break;
-        }
-      });
-    });
-
-  })();
-  </script>
+  <script src="script.js"></script>
 </body>
 </html>
