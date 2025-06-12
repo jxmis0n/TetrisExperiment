@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
-  <title>Tetris vs</title>
+  <title>Tetris vs CPU</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -19,28 +19,26 @@
   <!-- Score Bar -->
   <div id="scoreBars">
     <span id="playerPill" class="pill blue">Player: <b><span id="playerScorePill">0</span> pts</b></span>
-    <span id="cpuPill"    class="pill red">Opponent:    <b><span id="cpuScorePill">0</span> pts</b></span>
+    <span id="cpuPill"    class="pill red">CPU:    <b><span id="cpuScorePill">0</span> pts</b></span>
   </div>
   <!-- Lead Message -->
   <div id="leadText"></div>
   
   <!-- Main Game Area: Controls + Game Canvases + Instructions -->
   <div id="mainGameArea">
-    <!-- Desktop Controls & Hold Box -->
-    <div id="controls">
-      <div class="hold-label">HELD PIECE</div>
+    <!-- Desktop Controls & Hold Box -->    <div id="controls">
+      <!-- <div class="hold-label">HELD PIECE</div> -->
       <div id="holdBox"><canvas id="holdCanvas" width="64" height="64"></canvas></div>
-      <button id="holdButton">HOLD PIECE</button>
+      <button id="rotateButton">⟳ W</button>
       <div class="moveButtons">
         <button id="moveLeft">← A</button>
-        <button id="moveDown">↓ B</button>
-        <button id="moveRight">→ C</button>
+        <button id="moveDown">↓ S</button>
+        <button id="moveRight">→ D</button>
       </div>
-      <button id="rotateButton">↑ Shift ROTATE</button>
-      <button id="dropButton">DROP</button>
+      <button id="holdButton">⇧ HOLD</button>
+      <button id="dropButton">SPACE DROP</button>
     </div>
-    
-    <!-- Game Canvases -->
+      <!-- Game Canvases -->
     <div id="tetrisWrapper">
       <canvas id="playerCanvas" class="player" width="300" height="600"></canvas>
       <div id="scoreBarVertical">
@@ -60,9 +58,11 @@
             <span class="score-name-cpu">ASH</span>
           </div>
         </div>
-      </div>
-      <canvas id="cpuCanvas" class="cpu" width="300" height="600"></canvas>
+      </div>      <canvas id="cpuCanvas" class="cpu" width="300" height="600"></canvas>
     </div>
+
+    <!-- Mobile Hold Canvas (only visible on mobile) -->
+    <canvas id="mobileHoldCanvas" width="100" height="100" style="display: none;"></canvas>
 
     <!-- Solo Mode Instructions -->
     <div id="soloInstructions">
@@ -94,7 +94,7 @@
   </div><!-- Mobile Touch Buttons -->
   <div id="mobileControls">
     <div class="mobile-control-row">
-      <button data-cmd="hold">HOLD PIECE</button>
+      <button data-cmd="hold">HOLD</button>
     </div>
     <div class="mobile-control-row">
       <button data-cmd="moveLeft">←</button>
@@ -102,21 +102,13 @@
       <button data-cmd="moveRight">→</button>
     </div>
     <div class="mobile-control-row">
-      <button data-cmd="rotate">↑ Shift ROTATE</button>
+      <button data-cmd="rotate">⟳</button>
     </div>
     <div class="mobile-control-row">
-      <button data-cmd="hardDrop">DROP</button>
+      <button data-cmd="hardDrop">SPACE DROP</button>
     </div>
   </div>
-  <!-- Mobile Instructions -->
-  <div id="mobileInstructions">
-    USE THE BUTTONS BELOW TO PLAY TETRIS.
-  </div>
-
-  <!-- Mobile Hold Box -->
-  <div id="mobileHoldBox">
-    HELD PIECE
-  </div>
+ 
 
   <!-- Chat Interface -->
   <div id="chatInterface">
