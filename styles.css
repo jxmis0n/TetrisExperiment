@@ -1,0 +1,1150 @@
+/* Reset and Base Styles */
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: #ddd;
+  color: #111;
+  font-family: Arial, sans-serif;
+}
+
+/* Shake animation for score bars */
+@keyframes shake {
+  0%, 100% { transform: translateX(0) scale(1); }
+  10%, 30%, 50%, 70%, 90% { 
+    transform: translateX(-3px) scale(1.02); 
+    filter: brightness(1.2);
+  }
+  20%, 40%, 60%, 80% { 
+    transform: translateX(4px) scale(1.02); 
+    filter: brightness(1.2);
+  }
+}
+
+@keyframes shake-mobile {
+  0%, 100% { transform: translateY(0) scale(1); }
+  10%, 30%, 50%, 70%, 90% { 
+    transform: translateY(-4px) scale(1.03); 
+    filter: brightness(1.3);
+  }
+  20%, 40%, 60%, 80% { 
+    transform: translateY(4px) scale(1.03); 
+    filter: brightness(1.3);
+  }
+}
+
+@keyframes pulse-shake {
+  0%, 100% { 
+    transform: scale(1) translateX(0); 
+    filter: brightness(1);
+  }
+  15%, 35%, 55%, 75%, 95% { 
+    transform: scale(1.03) translateX(-6px); 
+    filter: brightness(1.3);
+  }
+  25%, 45%, 65%, 85% { 
+    transform: scale(1.03) translateX(6px); 
+    filter: brightness(1.3);
+  }
+  50% {
+    transform: scale(1.08) translateX(0);
+    filter: brightness(1.5);
+  }
+}
+
+.score-bar-shake {
+  animation: shake 0.6s ease-in-out;
+}
+
+.score-bar-shake-mobile {
+  animation: shake-mobile 0.7s ease-in-out;
+}
+
+.score-bar-pulse-shake {
+  animation: pulse-shake 0.8s ease-in-out;
+}
+
+/* Loading Overlay */
+#loadingOverlay {
+  position: absolute; inset: 0;
+  background: #000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+#loadingText {
+  font-size: 24px;
+  margin-bottom: 12px;
+  color: #fff;
+  text-shadow: 0 0 8px #00ff00;
+}
+#loadingBarBg {
+  width: 80%;
+  height: 16px;
+  background: #444;
+  border-radius: 8px;
+  overflow: hidden;
+}
+#loadingBarFg {
+  width: 0;
+  height: 100%;
+  background: limegreen;
+  transition: width 4s linear;
+}
+
+/* Countdown Overlay */
+#countdownOverlay {
+  position: absolute; inset: 0;
+  background: rgba(0,0,0,0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 96px;
+  visibility: hidden;
+  z-index: 90;
+}
+
+/* Score Bar */
+#scoreBars {
+  position: absolute; top: 0; left: 0; right: 0;
+  background: #111;
+  padding: 8px;
+  text-align: center;
+  z-index: 80;
+}
+.pill {
+  display: inline-block;
+  margin: 0 8px;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: bold;
+}
+.pill.blue   { background: rgba(0, 0, 128, 0); }
+.pill.red    { background: rgba(128, 0, 0, 0); }
+.pill.purple { background: rgba(76, 0, 130, 0); }
+
+/* Lead Text Animation */
+#leadText {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%) rotate(-10deg);
+  font-size: 32px;
+  color: hotpink;
+  text-shadow: 0 0 8px deeppink;
+  display: none;
+  z-index: 85;
+  animation: shake 0.1s infinite alternate;
+}
+@keyframes shake {
+  from { transform: translate(-52%, -48%) rotate(-10deg); }
+  to   { transform: translate(-48%, -52%) rotate(-10deg); }
+}
+
+/* Main Game Area - Flexbox Layout */
+#mainGameArea {
+  position: absolute;
+  top: 50px;
+  bottom: 50px;
+  left: 0;
+  right: 0;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px;
+  box-sizing: border-box;
+  gap: 20px;
+  min-width: 1000px; /* Minimum width to maintain layout */
+}
+
+/* Controls - Fixed width, no absolute positioning */
+#controls {
+  position: static;
+  left: unset;
+  top: unset;
+  transform: none;
+  flex: 0 0 auto;
+  width: 220px;
+  background: none;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  padding: 0;
+  color: #111;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+  z-index: 10;
+}
+
+/* Game Area */
+#tetrisWrapper {
+  position: static;
+  top: unset;
+  bottom: unset;
+  left: unset;
+  right: unset;
+  flex: 1 1 auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  padding: 8px;
+  min-width: 620px; /* Minimum width for two canvases + score bar */
+}
+
+/* Solo Mode Instructions - Fixed width */
+#soloInstructions {
+  position: static;
+  right: unset;
+  top: unset;
+  transform: none;
+  flex: 0 0 auto;
+  width: 320px;
+  display: none; /* Hidden by default, shown in solo mode */
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  border: 3px solid #495057;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.8);
+  font-family: Arial, sans-serif;
+}
+#controls .hold-label {
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: #111;
+  margin-bottom: 4px;
+  letter-spacing: 1px;
+  text-align: center;
+}
+#holdBox {
+  width: 80px;
+  height: 80px;
+  /* border: 2.5px solid #111; */
+  background: #222;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid #555;
+}
+#holdBox canvas {
+  width: 64px !important;
+  height: 64px !important;
+  background: #222 !important;
+  border: 2px solid #FF0000 !important;
+  box-shadow: none !important;
+  position: relative !important;
+  z-index: 100 !important;
+  opacity: 1 !important;
+}
+#holdButton {
+  width: 120px;
+  height: 48px;
+  margin-bottom: 12px;
+  background: #222;
+  color: #fff;
+  border: 3px solid #111;
+  border-radius: 8px;
+  box-shadow: 0 4px #111, 0 6px 12px rgba(0,0,0,0.5), inset 0 1px 0 #fff2;
+  font-size: 1.1rem;
+  font-weight: bold;
+  text-shadow: 0 1px 0 #000, 0 0 2px #fff8;
+  letter-spacing: 1px;
+  padding: 0;
+}
+.moveButtons {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 12px;
+  width: 100%;
+  justify-content: center;
+}
+.moveButtons button {
+  width: 56px;
+  height: 56px;
+  font-size: 1.3rem;
+  background: #222;
+  color: #fff;
+  border: 3px solid #111;
+  border-radius: 8px;
+  box-shadow: 0 4px #111, 0 6px 12px rgba(0,0,0,0.5), inset 0 1px 0 #fff2;
+  font-weight: bold;
+  text-shadow: 0 1px 0 #000, 0 0 2px #fff8;
+  padding: 0;
+}
+#rotateButton {
+  width: 48px;
+  height: 48px;
+  font-size: 1.1rem;
+  font-weight: bold;
+  background: #222;
+  color: #fff;
+  border: 3px solid #111;
+  border-radius: 8px;
+  box-shadow: 0 4px #111, 0 6px 12px rgba(0,0,0,0.5), inset 0 1px 0 #fff2;
+  margin-bottom: 12px;
+  text-shadow: 0 1px 0 #000, 0 0 2px #fff8;
+  letter-spacing: 1px;
+  padding: 0;
+}
+#dropButton {
+  width: 220px;
+  height: 48px;
+  font-size: 1.5rem;
+  font-weight: bold;
+  background: linear-gradient(to bottom, #444 0%, #111 100%);
+  color: #fff;
+  border: 3px solid #111;
+  border-radius: 10px;
+  box-shadow: 0 6px #111, 0 10px 18px rgba(0,0,0,0.6), inset 0 2px 0 #fff2;
+  margin-bottom: 0;
+  letter-spacing: 2px;
+  text-shadow: 0 1px 0 #000, 0 0 2px #fff8;
+  padding: 0;
+}
+button:active, #controls button:active {
+  background: #111;
+  box-shadow: 0 2px #000, 0 2px 4px rgba(0,0,0,0.6), inset 0 2px 4px #0008;
+}
+
+/* Mobile Controls (hidden by default) */
+#mobileControls {
+  display: none;
+}
+
+/* Alert */
+#tetrisOverlay {
+  position: absolute;
+  top: 40%; left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 36px;
+  color: yellow;
+  text-shadow: 0 0 8px orange;
+  display: none;
+  z-index: 85;
+}
+
+/* Solo Mode Instructions Styling */
+
+#soloInstructions h2 {
+  margin: 0 0 20px 0;
+  font-size: 1.6rem;
+  font-weight: bold;
+  color: #212529;
+  text-align: center;
+  text-shadow: 0 1px 0 rgba(255,255,255,0.8);
+  letter-spacing: 0.5px;
+}
+
+.instruction-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.instruction-item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 8px 12px;
+  background: rgba(255,255,255,0.6);
+  border: 2px solid #dee2e6;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.key-icon {
+  min-width: 60px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #343a40;
+  color: #fff;
+  border: 2px solid #495057;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-weight: bold;
+  box-shadow: 0 3px #212529, 0 4px 8px rgba(0,0,0,0.3);
+  text-shadow: 0 1px 0 #000;
+}
+
+.instruction-text {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #495057;
+  flex: 1;
+}
+
+.goal-text {
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: #6c757d;
+  text-align: center;
+  margin: 0;
+  padding: 16px;
+  background: rgba(108,117,125,0.1);
+  border-radius: 8px;
+  border: 1px solid #dee2e6;
+}
+
+/* Solo Mode Layout - Override flexbox for solo mode */
+body.solo-mode #scoreBarVertical,
+body.solo-mode #cpuCanvas,
+body.solo-mode #scoreBars .pill.red,
+body.solo-mode #scoreBars .pill.purple {
+  display: none !important;
+}
+
+body.solo-mode #soloInstructions {
+  display: flex !important;
+  flex-direction: column;
+}
+
+body.solo-mode #tetrisWrapper {
+  justify-content: center;
+  margin-left: 0;
+  margin-right: 0;
+}
+
+body.solo-mode #playerCanvas {
+  max-width: 350px;
+}
+
+body.solo-mode #scoreBars {
+  text-align: center;
+}
+
+/* Show vertical score bar between canvases for low competition mode on desktop */
+/* body.low-competition #scoreBarVertical {
+  display: none !important;
+} */
+
+/* Change top score bar background color for low competition mode - DESKTOP ONLY */
+@media (min-width: 481px) {
+  body.low-competition #scoreBars {
+    background: #111111a1 !important;
+  }
+}
+
+/* Vertical Score Bars */
+#scoreBarVertical {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: center;
+  min-width: 70px;
+  margin: 0 16px;
+  height: 100%; /* Match parent height for alignment */
+}
+.score-bar-container {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 18px;
+  height: 100%;
+}
+.score-bar-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100%;
+  justify-content: space-between;
+}
+.score-bar {
+  width: 2.5vw;
+  min-width: 18px;
+  max-width: 36px;
+  height: 60vh;
+  min-height: 180px;
+  max-height: 600px;
+  border-radius: 999px;
+  margin: 0;
+  background: #f0f0f0;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  overflow: hidden;
+}
+.score-bar-inner {
+  width: 100%;
+  border-radius: 999px 999px 0 0;
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  transition: height 0.5s cubic-bezier(.4,2,.6,1);
+  z-index: 1;
+}
+.score-bar.player .score-bar-inner {
+  background: #3b82f6;
+}
+.score-bar.cpu .score-bar-inner {
+  background: #dc2626;
+}
+.score-label {
+  font-size: clamp(1.2rem, 2.5vw, 2.4rem);
+  font-family: 'Arial Black', Impact, Arial, sans-serif;
+  font-weight: 900;
+  color: #222;
+  text-shadow: 2px 2px 0 #fff, -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 0 0 8px #fff;
+  letter-spacing: 1px;
+  line-height: 1;
+  text-align: center;
+  margin-bottom: 8px;
+  background: none;
+  border: none;
+  padding: 0;
+  min-width: 0;
+  box-shadow: none;
+  border-radius: 0;
+  position: static;
+}
+.score-bar.player .score-label {
+  color: #3b82f6;
+}
+.score-bar.cpu .score-label {
+  color: #dc2626;
+}
+.score-name-player, .score-name-cpu {
+  font-size: clamp(0.5rem, 0.8vw, 0.7rem);
+  font-family: 'Arial Black', Impact, Arial, sans-serif;
+  font-weight: 900;
+  text-align: center;
+  width: 3vw;
+  min-width: 32px;
+  max-width: 70px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  margin-top: 8px;
+  flex-shrink: 0;
+  color: #333;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.3), 0 1px 0 rgba(255,255,255,0.8);
+  line-height: 1;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+/* Canvas Styling */
+canvas {
+  background: #000;
+  width: 300px;
+  max-width: 300px;
+  height: 600px;
+  box-shadow: 0 0 6px rgba(255,255,255,0.2);
+  touch-action: none;
+}
+canvas.player { border: 3px solid blue; }
+canvas.cpu    { border: 3px solid red; }
+
+/* Chat Interface */
+#chatInterface {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 300px;
+  height: 350px;
+  background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+  border: 2px solid #1a252f;
+  border-radius: 8px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.1);
+  display: none;
+  flex-direction: column;
+  z-index: 150;
+  overflow: hidden;
+}
+
+#chatHeader {
+  background: linear-gradient(135deg, #1a252f 0%, #2c3e50 100%);
+  padding: 10px 15px;
+  border-bottom: 1px solid #34495e;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+#chatTitle {
+  color: #ecf0f1;
+  font-size: 1rem;
+  font-weight: bold;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+}
+
+#chatClose {
+  background: #e74c3c;
+  color: white;
+  border: none;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+#chatClose:hover {
+  background: #c0392b;
+  transform: scale(1.1);
+}
+
+#chatMessages {
+  flex: 1;
+  padding: 15px;
+  overflow-y: auto;
+  background: linear-gradient(135deg, #34495e 0%, #2c3e50 100%);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+#typingIndicator {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: rgba(52, 73, 94, 0.8);
+  border-radius: 15px;
+  border: 1px solid rgba(255,255,255,0.1);
+  align-self: flex-start;
+  max-width: 75%;
+}
+
+.typing-dots {
+  display: flex;
+  gap: 4px;
+}
+
+.dot {
+  width: 6px;
+  height: 6px;
+  background: #3498db;
+  border-radius: 50%;
+  animation: typing 1.5s infinite;
+}
+
+.dot:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.dot:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes typing {
+  0%, 60%, 100% {
+    transform: translateY(0);
+    opacity: 0.4;
+  }
+  30% {
+    transform: translateY(-10px);
+    opacity: 1;
+  }
+}
+
+.typing-text {
+  color: #bdc3c7;
+  font-size: 0.8rem;
+  font-style: italic;
+}
+
+.message {
+  padding: 8px 12px;
+  border-radius: 15px;
+  max-width: 75%;
+  word-wrap: break-word;
+  position: relative;
+  animation: messageSlideIn 0.3s ease-out;
+  font-size: 0.9rem;
+}
+
+.message.ash {
+  background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+  color: white;
+  align-self: flex-start;
+  border: 1px solid rgba(255,255,255,0.2);
+  text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+}
+
+.message.player {
+  background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+  color: white;
+  align-self: flex-end;
+  border: 1px solid rgba(255,255,255,0.2);
+  text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+}
+
+@keyframes messageSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+#chatInput {
+  padding: 10px 15px;
+  background: linear-gradient(135deg, #1a252f 0%, #2c3e50 100%);
+  border-top: 1px solid #34495e;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+#messageInput {
+  flex: 1;
+  padding: 8px 12px;
+  border: 1px solid #34495e;
+  border-radius: 20px;
+  background: rgba(52, 73, 94, 0.8);
+  color: #ecf0f1;
+  font-size: 0.85rem;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+#messageInput:focus {
+  border-color: #3498db;
+  background: rgba(52, 73, 94, 1);
+}
+
+#messageInput::placeholder {
+  color: #95a5a6;
+}
+
+#sendButton {
+  padding: 8px 16px;
+  background: linear-gradient(135deg, #27ae60 0%, #229954 100%);
+  color: white;
+  border: none;
+  border-radius: 20px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 0.85rem;
+}
+
+#sendButton:hover:not(:disabled) {
+  background: linear-gradient(135deg, #229954 0%, #1e8449 100%);
+  transform: translateY(-1px);
+}
+
+#sendButton:disabled {
+  background: #7f8c8d;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* Prevent overlap on smaller screens - scale down but maintain structure */
+@media (max-width: 1200px) {
+  #mainGameArea {
+    min-width: 800px;
+    gap: 15px;
+    padding: 15px;
+  }
+  
+  #controls {
+    width: 180px;
+  }
+  
+  #controls .hold-label {
+    font-size: 0.9rem;
+  }
+  
+  #holdBox {
+    width: 60px;
+    height: 60px;
+  }
+  
+  #holdBox canvas {
+    width: 48px;
+    height: 48px;
+  }
+  
+  #holdButton {
+    width: 120px;
+    height: 40px;
+    font-size: 1.1rem;
+  }
+  
+  .moveButtons button {
+    width: 48px;
+    height: 48px;
+    font-size: 1.1rem;
+  }
+  
+  #rotateButton {
+    width: 48px;
+    height: 48px;
+    font-size: 1.1rem;
+  }
+  
+  #dropButton {
+    width: 180px;
+    height: 40px;
+    font-size: 1.2rem;
+  }
+  
+  #soloInstructions {
+    width: 280px;
+    padding: 20px;
+  }
+  
+  canvas {
+    width: 250px;
+    max-width: 250px;
+    height: 500px;
+  }
+}
+
+@media (max-width: 900px) {
+  #mainGameArea {
+    min-width: 600px;
+    gap: 10px;
+    padding: 10px;
+  }
+  
+  #controls {
+    width: 140px;
+  }
+  
+  #soloInstructions {
+    width: 220px;
+    padding: 16px;
+  }
+  
+  canvas {
+    width: 200px;
+    max-width: 200px;
+    height: 400px;
+  }
+}
+
+/* Mobile styles for iPhone SE and similar devices */
+@media (max-width: 480px) {
+  /* Make score bars vertical and stacked at top */
+  #scoreBars {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    background: #11111100;
+    padding: 8px;
+    text-align: center;
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+
+    gap: 1px;
+    height: auto;
+    min-height: 60px;
+  }
+  
+  /* Add score text labels */
+  
+  
+    .pill {
+    display: block;
+    margin: 0;
+    padding: 0;
+    border-radius: 16px;
+    font-size: 12px;
+    font-weight: bold;
+    min-width: 140px;
+    text-align: center;
+    width: 180px;
+    height: 24px;
+    position: relative;
+    overflow: hidden;
+    background: #333;
+    border: 2px solid #555;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: rgb(27, 26, 26);
+
+    z-index: 2;
+  }
+  
+  /* Score bar fill effect */
+  .pill::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: var(--fill-percentage, 0%);
+    transition: width 0.3s ease-out;
+    border-radius: 14px;
+    z-index: -1;
+  }
+    /* Specific content for each pill */
+ 
+
+  
+  
+    /* Specific colors for each pill */
+  .pill.red::before {
+    background: linear-gradient(90deg, #dc2626 0%, #f14242b2 100%);
+  }
+  
+  .pill.blue::before {
+    background: linear-gradient(90deg, #2564eb 0%, #3b83f6bd 100%);
+  }
+  
+  .pill.purple::before {
+    background: linear-gradient(90deg, #7c3aed 0%, #8a5cf6bd 100%);
+  }
+  
+  /* Order the pills correctly */
+  #cpuPill {
+    order: -1;
+  }
+  
+  #playerPill {
+    order: 1;
+  }
+  /* Hide vertical score bars in mobile */
+  #scoreBarVertical {
+    display: none !important;
+  }
+    /* Adjust main game area to account for fixed top score bar */
+  #mainGameArea {
+    position: fixed;
+    top: 50px;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 10px;
+    min-width: unset;
+    flex-direction: column;
+    gap: 10px;
+  }/* Horizontal layout for mobile - player canvas left, CPU canvas right */
+  #tetrisWrapper {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: flex-start;
+    min-width: unset;
+    gap: 0px;
+    padding: 0;
+    padding-top: 20px;
+    width: 100%;
+    height: 100%;
+  }
+  
+  /* Player canvas - larger, positioned on the left */
+  /* #playerCanvas {
+    width: 200px !important;
+    max-width: 240px !important;
+    height: 360px !important;
+    flex-shrink: 0;
+  } */
+  
+       #playerCanvas {
+        width: 170px !important;
+        max-width: 240px !important;
+        height: 280px !important;
+        flex-shrink: 0;
+        top: 20px !important;
+    }
+
+  /* CPU canvas - smaller, positioned on the right */
+  /* #cpuCanvas {
+    width: 120px !important;
+    max-width: 120px !important;
+    height: 180px !important;
+    flex-shrink: 0;
+    border: 2px solid #e74c3c;
+    border-radius: 4px;
+  } */
+
+
+    #cpuCanvas {
+        width: 90px !important;
+        max-width: 160px !important;
+        min-width: 80px !important;
+        height: 150px !important;
+        flex-shrink: 0;
+        border: 2px solid #e74c3c;
+        border-radius: 4px;
+        margin-left: 30px !important;
+    }
+  
+  /* Single canvas mode (solo or when CPU is hidden) */
+  #tetrisWrapper:has(#cpuCanvas[style*="display: none"]) #playerCanvas,
+  body.solo-mode #playerCanvas {
+    width: 320px !important;
+    max-width: 320px !important;
+    height: 450px !important;
+    margin: 0 auto;
+  }  /* Hide desktop controls on mobile */
+  #controls {
+    display: none !important;
+  }
+  
+  /* Show mobile-specific hold canvas */
+  /* #mobileHoldCanvas {
+    display: block !important;
+    position: fixed !important;
+    top: 270px !important;
+    right: 15px !important;
+    width: 100px !important;
+    height: 100px !important;
+    border: 2px solid #fff !important;
+    background: #000 !important;
+    z-index: 999 !important;
+  } */
+
+
+      #mobileHoldCanvas {
+        display: block !important;
+        position: fixed !important;
+        top: 330px !important;
+        right: 25px !important;
+        width: 60px !important;
+        height: 60px !important;
+        border: 2px solid #fff !important;
+        background: #000 !important;
+        z-index: 999 !important;
+    }
+  
+  /* Hide original holdCanvas on mobile since it's in hidden controls */
+  #holdCanvas {
+    display: none !important;
+  }
+  
+  /* Hide solo instructions on mobile */
+  #soloInstructions {
+    display: none !important;
+  }  /* Show mobile controls */
+  #mobileControls {
+    display: block;
+    position: fixed;
+    top: 370px;
+    left: 10px;
+    width: 180px;
+    padding: 8px;
+    z-index: 90;
+    background: rgba(0, 0, 0, 0);
+  }
+    .mobile-control-row {
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+    margin-bottom: 6px;
+  }
+  
+  .mobile-control-row:last-child {
+    margin-bottom: 0;
+  }
+  
+  #mobileControls button {
+    background: linear-gradient(to bottom, #4a4a4a 0%, #2a2a2a 100%);
+    color: #ffffff;
+    border: 2px solid #1a1a1a;
+    border-radius: 6px;
+    padding: 8px 10px;
+    font-size: 11px;
+    font-weight: bold;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.8);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.1);
+    min-width: 50px;
+    cursor: pointer;
+    user-select: none;
+    touch-action: manipulation;
+  }
+  
+  #mobileControls button:active {
+    background: linear-gradient(to bottom, #2a2a2a 0%, #1a1a1a 100%);
+    border-color: #000;
+    transform: scale(0.95);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.5), inset 0 2px 4px rgba(0,0,0,0.3);
+  }  /* Specific button sizing */
+  #mobileControls button[data-cmd="hold"] {
+    min-width: 70px;
+    background: linear-gradient(to bottom, #3a3a3a 0%, #1f1f1f 100%);
+    border: 2px solid #0a0a0a;
+    font-size: 10px;
+    letter-spacing: 0.5px;
+    padding: 8px 10px;
+  }
+  
+  #mobileControls button[data-cmd="rotate"] {
+    min-width: 60px;
+    background: linear-gradient(to bottom, #4a4a4a 0%, #2a2a2a 100%);
+    border: 2px solid #1a1a1a;
+    font-size: 10px;
+    letter-spacing: 0.5px;
+    padding: 8px 10px;
+  }
+  
+  /* Movement buttons (left, down, right) */
+  #mobileControls button[data-cmd="moveLeft"],
+  #mobileControls button[data-cmd="softDrop"],
+  #mobileControls button[data-cmd="moveRight"] {
+    min-width: 45px;
+    padding: 8px 10px;
+    font-size: 12px;
+  }
+  
+  /* Space Drop button - positioned separately at bottom */
+  #mobileControls button[data-cmd="hardDrop"] {
+    position: fixed;
+    bottom: 10px;
+    left: 10px;
+    right: 10px;
+    min-width: unset;
+    width: calc(100% - 20px);
+    background: linear-gradient(to bottom, #555 0%, #111 100%);
+    border: 3px solid #000;
+    font-size: 10px;
+    letter-spacing: 2px;
+    padding: 12px 16px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.15);
+    z-index: 95;
+  }
+    /* Create mobile-specific hold label since desktop controls are hidden */  
+
+     #mobileInstructions::after {
+        content: "USE THE BUTTONS BELOW TO PLAY TETRIS.";
+        position: fixed;
+        top: 260px;
+        right: 7px;
+        color: #000000;
+        font-size: 10px;
+        font-weight: bold;
+        text-align: center;
+        width: 100px;
+        z-index: 16;
+        letter-spacing: 1px;
+    }
+  #tetrisWrapper::after {
+        content: "HELD PIECE";
+        position: fixed;
+        top: 320px;
+        right: 7px;
+        color: #000000;
+        font-size: 10px;
+        font-weight: bold;
+        text-align: center;
+        width: 100px;
+        z-index: 16;
+        letter-spacing: 1px;
+    }
+
+}

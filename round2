@@ -1,0 +1,223 @@
+Qualtrics.SurveyEngine.addOnReady(function() {
+  // FORCE TEST DATA - Check if embedded data works at all
+  Qualtrics.SurveyEngine.setEmbeddedData("TestField_Round2", "WORKING_" + new Date().getTime());
+  console.log("FORCE TEST: Created TestField_Round2");
+  
+  var valence = "${e://Field(Seq2)}";
+  var fileRound = 2; // This file is round2
+  var qid = this.questionId;
+  
+  // Auto-initialize chat data fields if they don't exist
+  initializeChatDataFields();
+  
+  // Dynamic sequencing system - determine actual sequence position
+  var sequenceRound = getOrSetSequenceRound();
+  var displayRound = sequenceRound; // Use sequence position for display and logic
+  
+  console.log("File round:", fileRound, "| Sequence round:", sequenceRound, "| Display round:", displayRound);
+  
+  // Initialize competition settings only for the FIRST round in sequence
+  var competition, mode;
+  if (sequenceRound === 1) {
+    // This is the first round to appear - set up competition
+    var modes = [
+      { competition: 'High', mode: 'vs', label: 'High Competition' },
+      { competition: 'Low', mode: 'vs', label: 'Low Competition' },
+    ];
+    
+    var randomIndex = Math.floor(Math.random() * modes.length);
+    var assignedMode = modes[randomIndex];
+    
+    // Set the competition level and mode in embedded data for all subsequent rounds
+    Qualtrics.SurveyEngine.setEmbeddedData("Competition", assignedMode.competition);
+    Qualtrics.SurveyEngine.setEmbeddedData("GameMode", assignedMode.mode);
+    console.log("FIRST ROUND - Randomly assigned:", assignedMode.competition, "competition,", assignedMode.mode, "mode");
+    
+    competition = assignedMode.competition;
+    mode = assignedMode.mode;
+  } else {
+    // This is a subsequent round - use existing competition settings
+    competition = Qualtrics.SurveyEngine.getEmbeddedData("Competition") || "High";
+    mode = Qualtrics.SurveyEngine.getEmbeddedData("GameMode") || "vs";
+    console.log("SUBSEQUENT ROUND - Using existing settings:", competition, "competition,", mode, "mode");
+  }
+    // Auto-initialize embedded data fields for chat collection
+  function initializeChatDataFields() {
+    console.log('=== INITIALIZING CHAT DATA FIELDS ===');
+    
+    // Initialize all chat response fields (player responses)
+    for (var i = 1; i <= 3; i++) {
+      var playerField = "ChatResponse" + i;
+      var existingPlayerValue = Qualtrics.SurveyEngine.getEmbeddedData(playerField);
+      if (existingPlayerValue === null || existingPlayerValue === undefined) {
+        Qualtrics.SurveyEngine.setEmbeddedData(playerField, "");
+        console.log('Created player chat field:', playerField);
+      } else {
+        console.log('Player chat field already exists:', playerField, '=', existingPlayerValue);
+      }
+    }
+    
+    // Initialize all opponent chat fields (CPU messages)
+    for (var i = 1; i <= 3; i++) {
+      var opponentField = "OpponentChat" + i;
+      var existingOpponentValue = Qualtrics.SurveyEngine.getEmbeddedData(opponentField);
+      if (existingOpponentValue === null || existingOpponentValue === undefined) {
+        Qualtrics.SurveyEngine.setEmbeddedData(opponentField, "");
+        console.log('Created opponent chat field:', opponentField);
+      } else {
+        console.log('Opponent chat field already exists:', opponentField, '=', existingOpponentValue);
+      }
+    }
+    
+    console.log('=== CHAT DATA FIELDS INITIALIZATION COMPLETE ===');
+  }
+
+  // Dynamic sequencing helper function
+  function getOrSetSequenceRound() {
+    var currentSequence = Qualtrics.SurveyEngine.getEmbeddedData("CurrentSequence");
+    if (!currentSequence) {
+      // First round to appear
+      Qualtrics.SurveyEngine.setEmbeddedData("CurrentSequence", "1");
+      return 1;
+    } else {
+      // Subsequent round
+      var nextSequence = parseInt(currentSequence) + 1;
+      Qualtrics.SurveyEngine.setEmbeddedData("CurrentSequence", nextSequence.toString());
+      return nextSequence;
+    }
+  }
+  
+  // Fixed valence message system based on sequence round
+  var valenceMessages = {
+    1: { // Round 1 - Positive Valence
+      win: "Thanks for Playing .That was Great!",
+      loss: "Thanks for Playing .That was Great!",
+      tie: "Thanks for Playing .That was Great!"
+    },
+    2: { // Round 2 - Negative Valence
+      win: "Lol,I beat you! you lost.",
+      loss: "Lol,I beat you! you lost.",
+      tie: "Lol,I beat you! you lost."
+    },
+    3: { // Round 3 - Neutral Valence
+      win: "That was something.",
+      loss: "That was something.",
+      tie: "That was something."
+    }
+  };
+  
+  // Get the appropriate valence message set for this sequence round
+  var currentValenceMessages = valenceMessages[displayRound] || valenceMessages[1];
+  console.log("Using valence messages for sequence round:", displayRound, currentValenceMessages);
+    // build a 100% wide, 75vh tall iframe with responsive dimensions
+  var src = "https://stackadnan.github.io/tetris-game/"
+    + "?competition=" + encodeURIComponent(competition)
+    + "&valence="     + encodeURIComponent(valence)
+    + "&mode="        + encodeURIComponent(mode)
+    + "&round="       + displayRound
+    + "&winMsg=" + encodeURIComponent(currentValenceMessages.win)
+    + "&lossMsg=" + encodeURIComponent(currentValenceMessages.loss)
+    + "&tieMsg=" + encodeURIComponent(currentValenceMessages.tie);
+
+  // Detect mobile devices
+  var isMobile = window.innerWidth <= 480 || /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+  
+  // Set dimensions based on device type
+  var containerStyle = isMobile 
+    ? "font-family:sans-serif; width:315px; height:600px; overflow:hidden; user-scalable=no; margin:0 auto;"
+    : "font-family:sans-serif; width:130vh; height:90vh; overflow:hidden; user-scalable=no";
+      var html = ''
+    + '<div style="' + containerStyle + '">'
+    +   '<h3 style="font-size:1.2em; margin:4px 0;">'
+    +     'Round ' + displayRound + ' (' + competition + ' ' + (mode === 'solo' ? 'Solo' : 'Competition') + ')'
+    +   '</h3>'
+    +   '<iframe '
+    +     'src="' + src + '" '
+    +     'style="width:100%; height:calc(100% - 30px); border:0; display:block;" '
+    +     'allowfullscreen>'
+    +   '</iframe>'
+    + '</div>';
+  jQuery("#" + qid + " .QuestionText").html(html);  window.addEventListener("message", function(evt) {
+    console.log('=== QUALTRICS MESSAGE LISTENER DEBUG (File Round ' + fileRound + ', Sequence Round ' + sequenceRound + ') ===');
+    console.log('Received message event:', evt);
+    console.log('Message data:', evt.data);
+    console.log('Message origin:', evt.origin);
+    
+    var d = evt.data;
+    if (!d) {
+      console.log('No data in message');
+      return;
+    }
+    
+    console.log('Data type:', d.type);
+    console.log('Data round:', d.round, 'Type:', typeof d.round);
+    console.log('Expected round:', displayRound, 'Type:', typeof displayRound);
+    console.log('Data text:', d.text);
+    console.log('Data sender:', d.sender);
+    
+    // Handle player chat responses - use sequence round for data storage
+    if (d.type === "chatResponse" && d.round === displayRound) {
+      console.log('Processing PLAYER chat response');
+      console.log('Setting embedded data: ChatResponse' + displayRound + ' = "' + d.text + '"');
+      Qualtrics.SurveyEngine.setEmbeddedData("ChatResponse" + displayRound, d.text);
+      
+      // Verify the data was saved
+      var savedValue = Qualtrics.SurveyEngine.getEmbeddedData("ChatResponse" + displayRound);
+      console.log('Verification - player chat embedded data value:', savedValue);
+      
+      if (savedValue === d.text) {
+        console.log('Player chat embedded data saved successfully');
+      } else {
+        console.log('WARNING: Player chat embedded data save failed!');
+        console.log('Expected:', d.text);
+        console.log('Actual:', savedValue);
+      }
+      
+      console.log('Clicking next button...');
+      console.log('================================================');
+      
+      // Add small delay to ensure data is saved before proceeding
+      setTimeout(function() {
+        jQuery("#NextButton").click();
+      }, 100);
+      return;
+    }
+    
+    // Handle opponent/CPU chat messages - use sequence round for data storage
+    if (d.type === "opponentChat" && d.round === displayRound) {
+      console.log('Processing OPPONENT chat message');
+      console.log('Setting embedded data: OpponentChat' + displayRound + ' = "' + d.text + '"');
+      Qualtrics.SurveyEngine.setEmbeddedData("OpponentChat" + displayRound, d.text);
+      
+      // Verify the data was saved
+      var savedValue = Qualtrics.SurveyEngine.getEmbeddedData("OpponentChat" + displayRound);
+      console.log('Verification - opponent chat embedded data value:', savedValue);
+      
+      if (savedValue === d.text) {
+        console.log('Opponent chat embedded data saved successfully');
+      } else {
+        console.log('WARNING: Opponent chat embedded data save failed!');
+        console.log('Expected:', d.text);
+        console.log('Actual:', savedValue);
+      }
+      
+      console.log('Opponent message recorded, waiting for player response...');
+      console.log('================================================');
+      return;
+    }
+    
+    // If message doesn't match expected criteria
+    if (d.type !== "chatResponse" && d.type !== "opponentChat") {
+      console.log('Message type mismatch - ignoring (type: ' + d.type + ')');
+      return;
+    }
+    
+    if (d.round !== displayRound) {
+      console.log('Round mismatch - ignoring (expected: ' + displayRound + ', got: ' + d.round + ')');
+      return;
+    }
+    
+    console.log('Unknown message type or condition - ignoring');
+    console.log('================================================');
+  });
+});

@@ -1,574 +1,140 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
   <title>Tetris vs CPU</title>
-  <style>
-    /* ========= SCORE PILLS & LEAD =========== */
-    #scoreBars { text-align:center; background:#eee; padding:10px 0; position:relative; }
-    .pill {
-      display:inline-block; margin:5px;
-      padding:8px 24px; border-radius:20px;
-      color:#fff; font-weight:bold; font-size:18px;
-      position:relative;
-      transition:background 0.3s;
-    }
-    .pill.red  { background: linear-gradient(90deg,maroon,red); }
-    .pill.blue { background: linear-gradient(90deg,navy,blue); }
-    .pill span.name { display:block; font-size:14px; color:#000; margin-bottom:4px; }
-    .pill span.score{ display:block; font-size:16px; }
-    #leadText {
-      position:absolute; top:50%; left:50%;
-      transform:translate(-50%,-50%) rotate(-15deg);
-      font-size:36px; color:deeppink; text-shadow:0 0 8px hotpink;
-      display:none; z-index:10;
-      animation:leadShake 0.1s infinite alternate;
-    }
-    @keyframes leadShake {
-      from{ transform:translate(-3px,-3px) rotate(-15deg); }
-      to  { transform:translate( 3px,  3px) rotate(-15deg); }
-    }
-
-    /* ========= TETRIS AREA ================ */
-    #tetrisWrapper {
-      display:flex; justify-content:center; align-items:flex-start;
-      gap:20px; margin:20px auto; max-width:640px; position:relative;
-    }
-    canvas {
-      background:#000; box-shadow:0 0 8px rgba(0,0,0,0.5);
-    }
-    canvas.player { border:4px solid blue; }
-    canvas.cpu    { border:4px solid red;  }
-
-    /* ========= HOLD + CONTROLS LEGEND ===== */
-    #controls {
-      max-width:640px; margin:10px auto; font-family:sans-serif; text-align:center;
-    }
-    #holdBox {
-      display:inline-block; width:80px; height:80px;
-      border:2px solid #000; margin-right:20px;
-      vertical-align:top;
-    }
-    #controlsText {
-      display:inline-block; text-align:left; font-size:14px;
-      vertical-align:top; line-height:1.4;
-    }
-
-    /* ========= MOBILE TOUCH BUTTONS ======= */
-    #mobileControls {
-      display:none; max-width:640px; margin:20px auto; text-align:center;
-    }
-    #mobileControls button {
-      width:60px; height:60px; margin:5px;
-      font-size:24px; border:none; background:#444; color:#fff;
-      border-radius:8px;
-    }
-
-    /* ========= TETRIS ALERT =============== */
-    #tetrisOverlay {
-      position:absolute; top:40%; left:50%;
-      transform:translate(-50%,-50%);
-      font-size:48px; color:yellow; text-shadow:0 0 10px orange;
-      z-index:5; display:none;
-    }
-
-    /* ========= COUNTDOWN OVERLAY ========== */
-    #countdownOverlay {
-      position:absolute; top:0; left:0; right:0; bottom:0;
-      background:rgba(0,0,0,0.8); color:#fff;
-      font-size:100px; display:flex;
-      align-items:center; justify-content:center;
-      z-index:20; visibility:hidden;
-    }
-
-    /* ========= RESPONSIVE RULES ============ */
-    @media (max-width:600px) {
-      #tetrisWrapper     { flex-direction:column; align-items:center; }
-      #mobileControls    { display:flex; justify-content:center; flex-wrap:wrap; }
-      /* Specific mobile adjustments happen in JS */
-    }
-  </style>
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-
-  <!-- Score Pills + Lead Text -->
-  <div id="scoreBars">
-    <div id="cpuPill" class="pill red">
-      <span class="name" id="cpuNamePill">CPU</span>
-      <span class="score" id="cpuScorePill">0 pts</span>
-    </div>
-    <div id="playerPill" class="pill blue">
-      <span class="name">Player</span>
-      <span class="score" id="playerScorePill">0 pts</span>
-    </div>
-    <div id="leadText">TAKES THE LEAD!!</div>
+  <!-- Loading Screen -->
+  <div id="loadingOverlay">
+    <div id="loadingText">Finding Opponent…</div>
+    <div id="loadingBarBg"><div id="loadingBarFg"></div></div>
   </div>
 
-  <!-- Countdown & Tetris Alert Overlays -->
+  <!-- Countdown -->
   <div id="countdownOverlay">3</div>
+
+  <!-- Score Bar -->
+  <div id="scoreBars">
+    <span id="playerPill" class="pill blue">Player: <b><span id="playerScorePill">0</span> pts</b></span>
+    <span id="cpuPill"    class="pill red">CPU:    <b><span id="cpuScorePill">0</span> pts</b></span>
+  </div>
+  <!-- Lead Message -->
+  <div id="leadText"></div>
+  
+  <!-- Main Game Area: Controls + Game Canvases + Instructions -->
+  <div id="mainGameArea">
+    <!-- Desktop Controls & Hold Box -->    <div id="controls">
+      <!-- <div class="hold-label">HELD PIECE</div> -->
+      <div id="holdBox"><canvas id="holdCanvas" width="64" height="64"></canvas></div>
+      <button id="rotateButton">⟳ W</button>
+      <div class="moveButtons">
+        <button id="moveLeft">← A</button>
+        <button id="moveDown">↓ S</button>
+        <button id="moveRight">→ D</button>
+      </div>
+      <button id="holdButton">⇧ HOLD</button>
+      <button id="dropButton">SPACE DROP</button>
+    </div>
+      <!-- Game Canvases -->
+    <div id="tetrisWrapper">
+      <canvas id="playerCanvas" class="player" width="300" height="600"></canvas>
+      <div id="scoreBarVertical">
+        <div class="score-bar-container">
+          <div class="score-bar-wrapper">
+            <span class="score-label score-player" id="scoreBarPlayerLabel">0</span>
+            <div class="score-bar player">
+              <div class="score-bar-inner" id="scoreBarPlayerInner"></div>
+            </div>
+            <span class="score-name-player">PLAYER</span>
+          </div>
+          <div class="score-bar-wrapper">
+            <span class="score-label score-cpu" id="scoreBarCpuLabel">0</span>
+            <div class="score-bar cpu">
+              <div class="score-bar-inner" id="scoreBarCpuInner"></div>
+            </div>
+            <span class="score-name-cpu">ASH</span>
+          </div>
+        </div>
+      </div>      <canvas id="cpuCanvas" class="cpu" width="300" height="600"></canvas>
+    </div>
+
+    <!-- Mobile Hold Canvas (only visible on mobile) -->
+    <canvas id="mobileHoldCanvas" width="100" height="100" style="display: none;"></canvas>
+
+    <!-- Solo Mode Instructions -->
+    <div id="soloInstructions">
+      <h2>How to Play Tetris</h2>
+      <div class="instruction-grid">
+        <div class="instruction-item">
+          <span class="key-icon">←→</span>
+          <span class="instruction-text">Move left/right</span>
+        </div>
+        <div class="instruction-item">
+          <span class="key-icon">↑</span>
+          <span class="instruction-text">Rotate piece</span>
+        </div>
+        <div class="instruction-item">
+          <span class="key-icon">↓</span>
+          <span class="instruction-text">Soft drop</span>
+        </div>
+        <div class="instruction-item">
+          <span class="key-icon">SPACE</span>
+          <span class="instruction-text">Hard drop</span>
+        </div>
+        <div class="instruction-item">
+          <span class="key-icon">C</span>
+          <span class="instruction-text">Hold piece</span>
+        </div>
+      </div>
+      <p class="goal-text">Clear horizontal lines by filling them completely. Clear 4 lines at once for a TETRIS!</p>
+    </div>
+  </div><!-- Mobile Touch Buttons -->
+  <div id="mobileControls">
+    <div class="mobile-control-row">
+      <button data-cmd="hold">HOLD</button>
+    </div>
+    <div class="mobile-control-row">
+      <button data-cmd="moveLeft">←</button>
+      <button data-cmd="moveDown">↓</button>
+      <button data-cmd="moveRight">→</button>
+    </div>
+    <div class="mobile-control-row">
+      <button data-cmd="rotate">⟳</button>
+    </div>
+    <div class="mobile-control-row">
+      <button data-cmd="hardDrop">SPACE DROP</button>
+    </div>
+  </div>
+ 
+
+  <!-- Chat Interface -->
+  <div id="chatInterface">
+    <div id="chatHeader">
+      <span id="chatTitle">Chat with Ash</span>
+      <button id="chatClose">×</button>
+    </div>
+    <div id="chatMessages">
+      <div id="typingIndicator">
+        <span class="typing-dots">
+          <span class="dot"></span>
+          <span class="dot"></span>
+          <span class="dot"></span>
+        </span>
+        <span class="typing-text">Ash is typing...</span>
+      </div>
+    </div>
+    <div id="chatInput">
+      <input type="text" id="messageInput" placeholder="Type your message..." disabled>
+      <button id="sendButton" disabled>Send</button>
+    </div>
+  </div>
+
+  <!-- Tetris Alert -->
   <div id="tetrisOverlay">WOW TETRIS!</div>
 
-  <!-- Game Boards -->
-  <div id="tetrisWrapper">
-    <canvas id="playerCanvas" class="player" width="300" height="600"></canvas>
-    <canvas id="cpuCanvas"    class="cpu"    width="300" height="600"></canvas>
-  </div>
-
-  <!-- Hold preview + desktop controls legend -->
-  <div id="controls">
-    <div id="holdBox">
-      <canvas id="holdCanvas" width="80" height="80"></canvas>
-    </div>
-    <div id="controlsText">
-      Controls:<br>
-      A / &larr; = Left D / &rarr; = Right<br>
-      S / &darr; = Soft Drop Shift = Rotate<br>
-      Space = Hard Drop C = Hold
-    </div>
-  </div>
-
-  <!-- On-screen touch buttons (shown on mobile) -->
-  <div id="mobileControls">
-    <button data-cmd="moveLeft">⟵</button>
-    <button data-cmd="moveDown">⟷</button>
-    <button data-cmd="moveRight">⟶</button>
-    <button data-cmd="rotate">⟳</button>
-    <button data-cmd="hardDrop">⤵</button>
-    <button data-cmd="hold">H</button>
-  </div>
-
-  <script>
-  (function(){
-    /*** 1) Read URL params and sniff device ***/
-    const params      = new URLSearchParams(location.search);
-    const competition = (params.get('competition')||'Low').toLowerCase();
-    const valence     = params.get('valence')       || 'Positive';
-    const round       = parseInt(params.get('round')) || 1;
-    const isMobile    = /Mobi|Android|iPhone/i.test(navigator.userAgent);
-
-    /*** 2) Assign random androgynous CPU name ***/
-    const names = ['Ash','Jordan','Riley','Taylor'];
-    const cpuName = names[Math.floor(Math.random()*names.length)];
-    document.getElementById('cpuNamePill').textContent = cpuName;
-
-    /*** 3) Mobile vs Desktop UI adjustments ***/
-    const cpuCanvas    = document.getElementById('cpuCanvas');
-    const playerCanvas = document.getElementById('playerCanvas');
-    const mobileCtrls  = document.getElementById('mobileControls');
-
-    if(isMobile) {
-      mobileCtrls.style.display = 'flex';
-      if(competition === 'low') {
-        // Hide CPU board entirely in Low mode
-        cpuCanvas.style.display = 'none';
-      } else {
-        // High comp: scale canvases
-        playerCanvas.style.width = '80%';
-        cpuCanvas   .style.width = '50%';
-      }
-    }
-
-    /*** 4) Shape definitions & colors ***/
-    const SHAPES = {
-      I:[[[1,1,1,1]],[[1],[1],[1],[1]]],
-      O:[[[1,1],[1,1]]],
-      T:[[[0,1,0],[1,1,1]],[[1,0],[1,1],[1,0]],[[1,1,1],[0,1,0]],[[0,1],[1,1],[0,1]]],
-      S:[[[0,1,1],[1,1,0]],[[1,0],[1,1],[0,1]]],
-      Z:[[[1,1,0],[0,1,1]],[[0,1],[1,1],[1,0]]],
-      J:[[[1,0,0],[1,1,1]],[[1,1],[1,0],[1,0]],[[1,1,1],[0,0,1]],[[0,1],[0,1],[1,1]]],
-      L:[[[0,0,1],[1,1,1]],[[1,0],[1,0],[1,1]],[[1,1,1],[1,0,0]],[[1,1],[0,1],[0,1]]]
-    };
-    const COLORS = { O:'blue', I:'purple', T:'orange', S:'pink', Z:'yellow', L:'red', J:'green', G:'gray' };
-
-    /*** 5) Heuristics ***/
-    function aggregateHeight(grid){
-      let h=0;
-      for(let c=0;c<10;c++){
-        for(let r=0;r<20;r++){
-          if(grid[r][c]){ h += 20 - r; break; }
-        }
-      }
-      return h;
-    }
-    function countHoles(grid){
-      let holes=0;
-      for(let c=0;c<10;c++){
-        let seen=false;
-        for(let r=0;r<20;r++){
-          if(grid[r][c]) seen=true;
-          else if(seen) holes++;
-        }
-      }
-      return holes;
-    }
-
-    /*** 6) TetrisBoard CLASS ***/
-    class TetrisBoard {
-      constructor(canvasId, mode) {
-        this.ctx = document.getElementById(canvasId).getContext('2d');
-        this.mode = mode;                   // 'human' or 'cpu'
-        this.grid = Array(20).fill().map(()=>Array(10).fill(0));
-        this.score   = 0;
-        this.garbage = 0;
-        this.hold     = null;
-        this.canHold  = true;
-        this.prevShape= null;
-        this.gameOver = false;
-        this.cpuTimer = 0;
-        this.spawn();
-
-        // CPU speed: High = 200ms, Low = 800ms; human always 500ms
-        let cpuSpeed = (competition==='high'?200:800);
-        this.dropInterval = (mode==='cpu'? cpuSpeed : 500);
-
-        this.acc  = 0;
-        this.last = performance.now();
-      }
-
-      spawn() {
-        // pick a non-repeating shape
-        let keys = Object.keys(SHAPES), p;
-        do { p = keys[Math.floor(Math.random()*keys.length)]; }
-        while (p === this.prevShape);
-        this.prevShape = p;
-        this.shape = SHAPES[p];
-        this.rot   = 0;
-        this.mat   = this.shape[0];
-        this.x     = Math.floor((10 - this.mat[0].length)/2);
-        this.y     = 0;
-        this.canHold = true;
-        if (!this.valid(this.mat,this.x,this.y)) this.gameOver=true;
-        if (this.mode==='cpu') this.planCPU();
-      }
-
-      valid(mat,x,y) {
-        for(let r=0;r<mat.length;r++)for(let c=0;c<mat[r].length;c++)if(mat[r][c]){
-          let X=x+c, Y=y+r;
-          if(X<0||X>=10||Y<0||Y>=20||this.grid[Y][X]) return false;
-        }
-        return true;
-      }
-
-      clearLines() {
-        this.grid = this.grid.filter(row=>row.some(v=>v===0));
-        let linesCleared = 20 - this.grid.length;
-        while(this.grid.length<20) this.grid.unshift(Array(10).fill(0));
-        return linesCleared;
-      }
-
-      lock() {
-        // lock into grid
-        for(let r=0;r<this.mat.length;r++)for(let c=0;c<this.mat[r].length;c++)if(this.mat[r][c]){
-          this.grid[this.y+r][this.x+c] = this.prevShape;
-        }
-
-        // clear lines
-        let L = this.clearLines();
-        if(L) {
-          this.score += L*100;
-          // only High comp sends garbage
-          if (competition==='high') this.garbage = L;
-          // only High comp shows TETRIS alert
-          if (competition==='high' && L>=4) triggerTetrisAlert();
-        }
-        this.spawn();
-      }
-
-      move(dx,dy) {
-        if(this.valid(this.mat,this.x+dx,this.y+dy)){
-          this.x+=dx; this.y+=dy; return true;
-        }
-        return false;
-      }
-
-      rotate() {
-        let nr = (this.rot+1)%this.shape.length;
-        let nm = this.shape[nr];
-        if(this.valid(nm,this.x,this.y)) {
-          this.rot = nr;
-          this.mat = nm;
-        }
-      }
-
-      hardDrop() {
-        while(this.move(0,1));
-        this.lock();
-      }
-
-      planCPU() {
-        // simple heuristic: minimize height+holes
-        let best=Infinity, plan={};
-        for(let r=0;r<this.shape.length;r++){
-          let mat = this.shape[r], w=mat[0].length;
-          for(let x=0;x<=10-w;x++){
-            let y=0;
-            while(this.valid(mat,x,y)) y++;
-            y--;
-            if(y<0) continue;
-            let g = this.grid.map(rr=>rr.slice());
-            for(let rr=0;rr<mat.length;rr++)for(let cc=0;cc<mat[rr].length;cc++)if(mat[rr][cc]){
-              g[y+rr][x+cc] = 1;
-            }
-            let score = aggregateHeight(g) + countHoles(g);
-            if(score<best){ best=score; plan={rot:r,x,y}; }
-          }
-        }
-        this.cpuPlan = plan;
-      }
-
-      update(dt) {
-        if(this.gameOver) return;
-        this.acc += dt;
-        if(this.acc > this.dropInterval) {
-          this.acc = 0;
-          if(!this.move(0,1)) this.lock();
-        }
-
-        if(this.mode==='cpu' && this.cpuPlan) {
-          this.cpuTimer += dt;
-          if(this.cpuTimer > 800) {
-            if(this.rot !== this.cpuPlan.rot)       this.rotate();
-            else if(this.x < this.cpuPlan.x)        this.move(1,0);
-            else if(this.x > this.cpuPlan.x)        this.move(-1,0);
-            else { this.hardDrop(); this.cpuTimer = 0; }
-          }
-        }
-      }
-
-      draw() {
-        let ctx = this.ctx;
-        ctx.clearRect(0,0,300,600);
-        // draw grid
-        for(let r=0;r<20;r++)for(let c=0;c<10;c++){
-          if(this.grid[r][c]){
-            ctx.fillStyle = COLORS[this.grid[r][c]];
-            ctx.fillRect(c*30,r*30,30,30);
-          }
-          ctx.strokeStyle='#333';
-          ctx.strokeRect(c*30,r*30,30,30);
-        }
-        // draw active piece
-        if(!this.gameOver){
-          ctx.fillStyle = COLORS[this.prevShape];
-          for(let r=0;r<this.mat.length;r++)for(let c=0;c<this.mat[r].length;c++){
-            if(this.mat[r][c]){
-              ctx.fillRect((this.x+c)*30,(this.y+r)*30,30,30);
-              ctx.strokeRect((this.x+c)*30,(this.y+r)*30,30,30);
-            }
-          }
-        }
-        // draw hold preview
-        this.drawHold();
-      }
-
-      hold() {
-        if(!this.canHold) return;
-        this.canHold = false;
-        if(!this.hold){
-          this.hold = this.prevShape;
-          this.spawn();
-        } else {
-          let tmp = this.prevShape;
-          this.prevShape = this.hold;
-          this.hold = tmp;
-          this.shape = SHAPES[this.prevShape];
-          this.rot   = 0;
-          this.mat   = this.shape[0];
-          this.x     = Math.floor((10 - this.mat[0].length)/2);
-          this.y     = 0;
-        }
-      }
-
-      drawHold() {
-        let hc = document.getElementById('holdCanvas'),
-            ctx=hc.getContext('2d');
-        ctx.clearRect(0,0,80,80);
-        if(!this.hold) return;
-        let mat = SHAPES[this.hold][0],
-            sz  = 80 / mat.length;
-        for(let r=0;r<mat.length;r++)for(let c=0;c<mat[r].length;c++){
-          if(mat[r][c]){
-            ctx.fillStyle = COLORS[this.hold];
-            ctx.fillRect(c*sz,r*sz,sz,sz);
-            ctx.strokeStyle = '#000';
-            ctx.strokeRect(c*sz,r*sz,sz,sz);
-          }
-        }
-      }
-    }
-
-    /*** 7) GAME LOOP ***/
-    window.player = new TetrisBoard('playerCanvas','human');
-    window.cpu    = new TetrisBoard('cpuCanvas','cpu');
-    let last = performance.now();
-
-    function frame(ts) {
-      let dt = ts - last; last = ts;
-      player.update(dt);
-      cpu.update(dt);
-
-      // garbage exchange only in High comp
-      if(competition==='high'){
-        if(player.garbage){
-          cpu.grid.shift();
-          cpu.grid.push(Array(10).fill('G'));
-          player.garbage = 0;
-        }
-        if(cpu.garbage){
-          player.grid.shift();
-          player.grid.push(Array(10).fill('G'));
-          cpu.garbage = 0;
-        }
-      }
-
-      player.draw();
-      cpu.draw();
-      updateScores(player.score, cpu.score);
-
-      if(!player.gameOver && !cpu.gameOver){
-        requestAnimationFrame(frame);
-      } else {
-        showChat();
-      }
-    }
-
-    /*** 8) UPDATE SCORES & LEAD TEXT ***/
-    function updateScores(pScore, cScore) {
-      document.getElementById('playerScorePill').textContent = pScore + ' pts';
-      document.getElementById('cpuScorePill')   .textContent = cScore + ' pts';
-
-      const pPill = document.getElementById('playerPill'),
-            cPill = document.getElementById('cpuPill'),
-            lead  = document.getElementById('leadText');
-
-      if(competition==='high'){
-        pPill.classList.toggle('shake', pScore>500);
-        cPill.classList.toggle('shake', cScore>500);
-      }
-
-      // lead flash only in High comp
-      if(competition==='high'){
-        if(pScore>cScore && updateScores.last!=='player'){
-          lead.textContent = 'PLAYER TAKES THE LEAD!!';
-          lead.style.display='block';
-          setTimeout(()=>lead.style.display='none',3000);
-          updateScores.last='player';
-        }
-        if(cScore>pScore && updateScores.last!=='cpu'){
-          lead.textContent = cpuName + ' TAKES THE LEAD!!';
-          lead.style.display='block';
-          setTimeout(()=>lead.style.display='none',3000);
-          updateScores.last='cpu';
-        }
-      }
-    }
-    updateScores.last = null;
-
-    /*** 9) TETRIS ALERT ***/
-    function triggerTetrisAlert(){
-      if(competition==='high'){
-        const to = document.getElementById('tetrisOverlay');
-        to.style.display='block';
-        setTimeout(()=>to.style.display='none',1500);
-      }
-    }
-
-    /*** 10) CHAT POPUP & postMessage ***/
-    function showChat(){
-      const chatBox = document.createElement('div');
-      chatBox.style.position='absolute';
-      chatBox.style.bottom='20px';
-      chatBox.style.left='50%';
-      chatBox.style.transform='translateX(-50%)';
-      chatBox.style.background='rgba(255,255,255,0.9)';
-      chatBox.style.padding='10px';
-      chatBox.style.borderRadius='8px';
-      chatBox.style.fontFamily='sans-serif';
-      chatBox.style.zIndex='30';
-
-      const msg = document.createElement('div');
-      msg.style.marginBottom='8px';
-      msg.textContent = cpuName + ': ' + (
-        valence==='Positive'  ? "Thanks for playing. That was great." :
-        valence==='Negative'  ? "Lol. I beat you. You lost." :
-                                "That was something."
-      );
-      chatBox.appendChild(msg);
-
-      const input = document.createElement('input');
-      input.type = 'text';
-      input.placeholder = 'Your response…';
-      input.style.width='300px';
-      input.style.fontSize='16px';
-      chatBox.appendChild(input);
-
-      document.body.appendChild(chatBox);
-      input.focus();
-
-      input.addEventListener('keydown', function(e){
-        if(e.key==='Enter' && this.value.trim()){
-          // send to Qualtrics
-          window.parent.postMessage({
-            type: 'chatResponse',
-            round: round,
-            valence: valence,
-            text: this.value.trim()
-          }, '*');
-          input.disabled = true;
-          input.style.opacity = '0.5';
-        }
-      });
-    }
-
-    /*** 11) COUNTDOWN START ***/
-    const cd = document.getElementById('countdownOverlay');
-    let ctr=3;
-    cd.style.visibility='visible';
-    cd.textContent=ctr;
-    const cdInt = setInterval(()=>{
-      ctr--;
-      if(ctr>0) {
-        cd.textContent = ctr;
-      } else {
-        clearInterval(cdInt);
-        cd.style.visibility='hidden';
-        last = performance.now();
-        requestAnimationFrame(frame);
-      }
-    },1000);
-
-    /*** 12) Desktop keyboard binding ***/
-    document.addEventListener('keydown', e=>{
-      if(player.gameOver) return;
-      switch(e.key){
-        case 'a': case 'ArrowLeft':  player.move(-1,0); break;
-        case 'd': case 'ArrowRight': player.move(1,0);  break;
-        case 's': case 'ArrowDown':  player.move(0,1);  break;
-        case ' ':                    player.hardDrop(); break;
-        case 'c':                    player.hold();     break;
-      }
-      if(e.code==='ShiftLeft' || e.code==='ShiftRight'){
-        player.rotate();
-      }
-    });
-
-    /*** 13) Mobile touch binding ***/
-    mobileCtrls.querySelectorAll('button').forEach(btn=>{
-      btn.addEventListener('click', ()=>{
-        if(player.gameOver) return;
-        switch(btn.dataset.cmd){
-          case 'moveLeft':  player.move(-1,0); break;
-          case 'moveRight': player.move(1,0);  break;
-          case 'moveDown':  player.move(0,1);  break;
-          case 'rotate':    player.rotate();   break;
-          case 'hardDrop':  player.hardDrop(); break;
-          case 'hold':      player.hold();     break;
-        }
-      });
-    });
-
-  })();
-  </script>
+  <script src="script.js"></script>
 </body>
 </html>
