@@ -15,7 +15,7 @@
   console.log(`Full URL: ${location.href}`);
   console.log(`URL search params: ${location.search}`);
   console.log(`Valence Messages - Win: "${winMsg}", Loss: "${lossMsg}", Tie: "${tieMsg}"`);
-  
+
   // Add debug logging for garbage system
   console.log('Garbage system enabled for high competition:', competition === 'high' && mode === 'vs');
   // --- Solo Mode Setup ---
@@ -23,7 +23,7 @@
     document.body.classList.add('solo-mode');
     document.getElementById('loadingText').textContent = 'Loading Tetris...';
   }
-  
+
   // --- Competition Mode Setup ---
   if (competition === 'low') {
     document.body.classList.add('low-competition');
@@ -34,7 +34,7 @@
   const names   = ['Ash', 'Jordan', 'Riley', 'Taylor'];
   const cpuName = names[Math.floor(Math.random() * names.length)];
   const cpuPill = document.getElementById('cpuPill');
-  
+
   if (mode === 'vs') {
     cpuPill.innerHTML = `${cpuName}: <b><span id='cpuScorePill'>0</span> pts</b>`;
     if (competition === 'low') {
@@ -164,10 +164,10 @@
         this.dropInterval = 500; // Player drop speed
         this.moveInterval = 200; // Player move speed
         this.skillLevel = 'human';
-      }      
+      }
       this.spawn();
       this.acc = 0;
-      
+
       // Initialize hold canvas display
       this.drawHold();
     }spawn() {
@@ -250,7 +250,7 @@
         // Swap current piece with held piece
         const tempShape = this.heldPiece;
         this.heldPiece = this.prevShape;
-        
+
         // Set up the swapped piece
         this.prevShape = tempShape;
         this.shape = SHAPES[tempShape];
@@ -258,12 +258,12 @@
         this.mat = this.shape[0];
         this.x = Math.floor((10 - this.mat[0].length)/2);
         this.y = 0;
-        
+
         // Check if the swapped piece can be placed
         if (!this.valid(this.mat, this.x, this.y)) {
           this.gameOver = true;
         }
-        
+
         if (this.mode === 'cpu') this.planCPU();      }
 
       this.canHold = false;
@@ -292,16 +292,16 @@
                 - lines * 1000                    // HUGE bonus for line clears
                 - (lines >= 4 ? 2000 : 0)         // Massive bonus for Tetris
                 - (lines >= 2 ? 500 : 0);         // Extra bonus for double+ lines
-          
+
           if (score < best) {
             best = score;
             plan = {rot:r, x, y};
           }
         }      }
-      
+
       this.cpuPlan = plan;
       console.log(`CPU (${competition}): Planned move - rot:${plan.rot}, x:${plan.x}, score:${best.toFixed(2)}`);
-      
+
       // Additional debugging for line clearing
       if (competition === 'high' || competition === 'low') {
         // Test the planned move to see if it clears lines
@@ -329,7 +329,7 @@
         garbageRow[gapPos] = 0; // Leave one gap
         this.grid.push(garbageRow);
       }
-      
+
       // Check if current piece is still valid after garbage
       if (!this.valid(this.mat, this.x, this.y)) {
         // Try to move the piece up
@@ -346,7 +346,7 @@
       }      if (this.gameOver) {
         return;
       }
-      
+
       this.acc += dt;
       if (this.acc > this.dropInterval) {
         this.acc = 0;
@@ -395,12 +395,12 @@
       const isMobile = window.innerWidth <= 480;
       const canvasId = isMobile ? 'mobileHoldCanvas' : 'holdCanvas';
       const hc = document.getElementById(canvasId);
-      
+
       if (!hc) {
         console.error(`${canvasId} not found!`);
         return;
       }
-      
+
       const ctx = hc.getContext('2d');
       // Always clear and redraw to ensure consistency
       const canvasSize = isMobile ? 100 : 64;
@@ -414,19 +414,19 @@
         ctx.fillRect(centerX, centerY, indicatorSize, indicatorSize);
         return;
       }
-      
+
       const mat = SHAPES[this.heldPiece][0];
       const maxDim = Math.max(mat.length, mat[0].length);
       const sz = Math.floor((canvasSize - 16) / maxDim); // Leave 16px margin
-      
+
       // Center the piece in the canvas
       const offsetX = (canvasSize - mat[0].length * sz) / 2;
       const offsetY = (canvasSize - mat.length * sz) / 2;
-      
+
       ctx.fillStyle = COLORS[this.heldPiece];
       ctx.strokeStyle = '#FFF';
       ctx.lineWidth = 2;
-      
+
       for (let r = 0; r < mat.length; r++) {
         for (let c = 0; c < mat[r].length; c++) {
           if (mat[r][c]) {
@@ -443,13 +443,13 @@
   if (mode === 'vs') {
     window.cpu = new TetrisBoard('cpuCanvas', 'cpu');
   }
-  
+
   // Initialize scores to 0
   updateScores(0, 0);
-  
+
   // Track who lost first - make it globally accessible
   window.gameWinner = null;
-  
+
   let lastTime = performance.now();  function gameLoop(timestamp) {
     const dt = timestamp - lastTime;
     lastTime = timestamp;
@@ -512,7 +512,7 @@
     const prevC = updateScores.prevCpuScore || 0;
     const playerScoreIncrease = p > prevP;
     const cpuScoreIncrease = c > prevC;
-    
+
     document.getElementById('playerScorePill').textContent = p;
     if (mode === 'vs') {
       document.getElementById('cpuScorePill').textContent = c;
@@ -555,7 +555,7 @@
     const playerPct = p / maxScore;
     const cpuPct = c / maxScore;    if (playerInner) playerInner.style.height = (playerPct * 100) + '%';
     if (cpuInner && mode === 'vs') cpuInner.style.height = (cpuPct * 100) + '%';
-    
+
     // Add shake effect for score increases in high competition mode
     if (competition === 'high') {
       // Shake vertical score bars when scores increase
@@ -570,7 +570,7 @@
           setTimeout(() => playerWrapper.classList.remove('score-bar-pulse-shake'), 800);
         }
       }
-      
+
       if (cpuScoreIncrease && mode === 'vs' && document.getElementById('scoreBarVertical')) {
         const cpuBar = document.querySelector('.score-bar.cpu');
         const cpuWrapper = cpuBar?.closest('.score-bar-wrapper');
@@ -589,7 +589,7 @@
           // Use different animation for mobile vs desktop
           const shakeClass = isMobile ? 'score-bar-shake-mobile' : 'score-bar-shake';
           const duration = isMobile ? 700 : 600;
-          
+
           playerPill.classList.remove('score-bar-shake', 'score-bar-shake-mobile');
           // Force reflow to restart animation
           playerPill.offsetHeight;
@@ -597,14 +597,14 @@
           setTimeout(() => playerPill.classList.remove(shakeClass), duration);
         }
       }
-      
+
       if (cpuScoreIncrease && mode === 'vs') {
         const cpuPill = document.getElementById('cpuPill');
         if (cpuPill) {
           // Use different animation for mobile vs desktop
           const shakeClass = isMobile ? 'score-bar-shake-mobile' : 'score-bar-shake';
           const duration = isMobile ? 700 : 600;
-          
+
           cpuPill.classList.remove('score-bar-shake', 'score-bar-shake-mobile');
           // Force reflow to restart animation
           cpuPill.offsetHeight;
@@ -613,7 +613,7 @@
         }
       }
     }
-    
+
     const lead = document.getElementById('leadText');
     if (mode === 'vs' && competition === 'high') {
       if (p > c && updateScores.last !== 'p') {
@@ -629,7 +629,7 @@
         updateScores.last = 'c';
       }
     }
-    
+
     // Store current scores for next comparison
     updateScores.prevPlayerScore = p;
     updateScores.prevCpuScore = c;  }
@@ -758,7 +758,7 @@
       }
         cpuMessage.textContent = text;
       chatMessages.appendChild(cpuMessage);
-      
+
       // Send CPU message to parent window for data collection
       const cpuMessageData = {
         type: 'opponentChat',
@@ -767,19 +767,19 @@
         text: text,
         sender: 'cpu'
       };
-      
+
       console.log('=== CPU CHAT DATA COLLECTION DEBUG ===');
       console.log('Sending CPU message with data:', cpuMessageData);
       console.log('CPU message text:', text);
       console.log('======================================');
-      
+
       window.parent.postMessage(cpuMessageData, '*');
-      
+
       // Enable input and send button
       messageInput.disabled = false;
       sendButton.disabled = false;
       messageInput.focus();
-      
+
       // Scroll to bottom
       chatMessages.scrollTop = chatMessages.scrollHeight;
     }, typingDelay);
@@ -794,12 +794,12 @@
       playerMessage.className = 'message player';
       playerMessage.textContent = text;
       chatMessages.appendChild(playerMessage);
-      
+
       // Clear input and disable controls
       messageInput.value = '';
       messageInput.disabled = true;
       sendButton.disabled = true;
-      
+
       // Scroll to bottom
       chatMessages.scrollTop = chatMessages.scrollHeight;      // Send response to parent window
       const messageData = {
@@ -809,7 +809,7 @@
         text: text,
         sender: 'player'
       };
-      
+
       console.log('=== PLAYER CHAT DATA COLLECTION DEBUG ===');
       console.log('Sending postMessage with data:', messageData);
       console.log('Round:', round, 'Type:', typeof round);
@@ -817,7 +817,7 @@
       console.log('Text:', text);
       console.log('Parent window exists:', window.parent !== window);
       console.log('=========================================');
-      
+
       window.parent.postMessage(messageData, '*');
     }
 
@@ -843,8 +843,8 @@
       case 'a': case 'ArrowLeft':  window.player.move(-1,0); break;
       case 'd': case 'ArrowRight': window.player.move(1,0);  break;
       case 's': case 'ArrowDown':  window.player.move(0,1);  break;
-      case ' ':                   window.player.hardDrop();  break;
-      case 'w':                   window.player.rotate();   break;
+      case 'w': case 'ArrowUp':    window.player.rotate();    break;
+      case ' ':                    window.player.hardDrop();  break;
     }
     if (e.code === 'ShiftLeft' || e.code === 'ShiftRight') window.player.hold();
   });
@@ -883,8 +883,8 @@
       }
     });
   });  // --- Make Desktop Controls Functional ---
-document.getElementById('holdButton').onclick = () => { 
-  if (!window.player?.gameOver) window.player.hold(); 
+document.getElementById('holdButton').onclick = () => {
+  if (!window.player?.gameOver) window.player.hold();
 };
 document.getElementById('moveLeft').onclick  = () => { if (!window.player?.gameOver) window.player.move(-1,0); };
 document.getElementById('moveDown').onclick  = () => { if (!window.player?.gameOver) window.player.move(0,1); };
