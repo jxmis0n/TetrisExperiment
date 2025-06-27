@@ -196,7 +196,6 @@ html, body {
   align-items: center;
   gap: 12px;
   padding: 8px;
-  min-width: 620px; /* Minimum width for two canvases + score bar */
 }
 
 /* Solo Mode Instructions - Fixed width */
