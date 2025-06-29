@@ -45,14 +45,15 @@ Qualtrics.SurveyEngine.addOnReady(function() {
 		}
 	};
 
-	// timeout safeguard: auto-advance after 30 seconds of inactivity
-	let advanced = false;
-	const timeoutID = setTimeout(() => {
-		if (!advanced) {
-			advanced = true;
-			jQuery("#NextButton").click();
-		}
-	}, 30000);
+	// disabled for now, its competing with the chat timer
+	// // timeout safeguard: auto-advance after 60 seconds of inactivity
+	// let advanced = false;
+	// const timeoutID = setTimeout(() => {
+	// 	if (!advanced) {
+	// 		advanced = true;
+	// 		jQuery("#NextButton").click();
+	// 	}
+	// }, 60000);
 
 	// force-write a test value into embedded data to confirm data layer is working
 	Qualtrics.SurveyEngine.setEmbeddedData(TEST_FIELD, "WORKING_" + Date.now());
@@ -104,7 +105,7 @@ Qualtrics.SurveyEngine.addOnReady(function() {
 	// constructs the iframe src and injects the game into the survey DOM
 	function startGame(comp, mode) {
 		// url should not be hardcoded, fix for later
-		var src = "https://jxmis0n.github.io/TetrisExperiment/"
+		var src = "https://exale1n.github.io/jxm-test/"
 			+ "?competition=" + encodeURIComponent(comp)
 			+ "&valence=" + encodeURIComponent(VALENCE_FIELD)
 			+ "&mode=" + encodeURIComponent(mode)
@@ -115,13 +116,14 @@ Qualtrics.SurveyEngine.addOnReady(function() {
 
 		// responsive styling based on device type
 		var isMobile = window.innerWidth <= 480 || /Mobi|Android|iPhone|iPad|iPod/.test(navigator.userAgent);
+		// this is so dirty i hate myself for it...
 		var style = isMobile
-			? "width:100%;height:600px;overflow:hidden;margin:0 auto;"
-			: "width:100%;height:90vh;overflow:hidden;";
+			? "width:calc(100% + 20px);height:600px;overflow:hidden;margin:0 0 -30px -10px;"
+			: "width:120vh;height:90vh;overflow:hidden;";
 
 		var html = '<div style="' + style + '">'
 			+ '<iframe src="' + src + '" '
-			+ 'style="width:100%;height:calc(100% - 30px);border:0;" allowfullscreen>'
+			+ 'style="width:100%;height:calc(100% - 20px);border:0;" allowfullscreen>'
 			+ '</iframe>'
 			+ '</div>';
 
@@ -155,13 +157,7 @@ Qualtrics.SurveyEngine.addOnReady(function() {
 			Qualtrics.SurveyEngine.setEmbeddedData(chatField, d.text);
 			console.log("Recorded", chatField + ":", d.text);
 
-			if (!advanced) {
-				advanced = true;
-				clearTimeout(timeoutID);
-				setTimeout(() => {
-					jQuery("#NextButton").click();
-				}, 100);
-			}
+			jQuery("#NextButton").click();
 			return;
 		}
 
