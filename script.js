@@ -501,6 +501,15 @@
       if (!window.player.gameOver && !window.cpu.gameOver) {
         requestAnimationFrame(gameLoop);
       } else {
+        // this should post the scores to the parent windowAdd commentMore actions
+        window.parent.postMessage({
+          type:   'gameEnd',
+          round:  round,                     // existing `round` variable
+          result: window.gameWinner,         // 'player', 'cpu' or 'tie'
+          score:  window.player.score        // final player score
+        }, '*');
+        
+        // show the chat
         showChat();
       }
     }
