@@ -34,9 +34,9 @@ Qualtrics.SurveyEngine.addOnReady(function() {
 			tie: "Thanks for playing. That was great!"
 		},
 		2: {
-			win: "Lol, I beat you! You lost.",
-			loss: "Lol, whatever. I let you win.",
-			tie: "Lol, I beat you! You lost."
+			win: "Lol, whatever. I let you win.",
+			loss: "Lol, I beat you. You lost.",
+			tie: "Lol. You still couldn't beat me."
 		},
 		3: {
 			win: "That was something.",
