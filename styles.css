@@ -521,8 +521,8 @@ body.solo-mode #scoreBars {
   font-weight: 900;
   text-align: center;
   width: 3vw;
-  min-width: 32px;
-  max-width: 70px;
+  min-width: 40px;
+  max-width: 80px;
   letter-spacing: 0.5px;
   text-transform: uppercase;
   margin-top: 8px;
