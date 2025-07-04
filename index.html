@@ -1,140 +1,152 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
-  <title>Tetris vs CPU</title>
-  <link rel="stylesheet" href="styles.css">
-</head>
-<body>
-  <!-- Loading Screen -->
-  <div id="loadingOverlay">
-    <div id="loadingText">Finding Opponent…</div>
-    <div id="loadingBarBg"><div id="loadingBarFg"></div></div>
-  </div>
-
-  <!-- Countdown -->
-  <div id="countdownOverlay">3</div>
-
-  <!-- Score Bar -->
-  <div id="scoreBars">
-    <span id="playerPill" class="pill blue">Player: <b><span id="playerScorePill">0</span> pts</b></span>
-    <span id="cpuPill"    class="pill red">CPU:    <b><span id="cpuScorePill">0</span> pts</b></span>
-  </div>
-  <!-- Lead Message -->
-  <div id="leadText"></div>
-
-  <!-- Main Game Area: Controls + Game Canvases + Instructions -->
-  <div id="mainGameArea">
-    <!-- Desktop Controls & Hold Box -->    <div id="controls">
-      <!-- <div class="hold-label">HELD PIECE</div> -->
-      <div id="holdBox"><canvas id="holdCanvas" width="64" height="64"></canvas></div>
-      <button id="rotateButton">⟳ W</button>
-      <div class="moveButtons">
-        <button id="moveLeft">← A</button>
-        <button id="moveDown">↓ S</button>
-        <button id="moveRight">→ D</button>
-      </div>
-      <button id="holdButton">⇧ HOLD</button>
-      <button id="dropButton">SPACE DROP</button>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+    <title>Tetris vs CPU</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <!-- Loading Screen -->
+    <div id="loadingOverlay">
+      <div id="loadingText">Finding Opponent…</div>
+      <div id="loadingBarBg"><div id="loadingBarFg"></div></div>
     </div>
+
+    <!-- Countdown -->
+    <div id="countdownOverlay">3</div>
+
+    <!-- Score Bar -->
+    <div id="scoreBars">
+      <span id="playerPill" class="pill blue"
+        >Player: <b><span id="playerScorePill">0</span> pts</b></span
+      >
+      <span id="cpuPill" class="pill red"
+        >CPU: <b><span id="cpuScorePill">0</span> pts</b></span
+      >
+    </div>
+
+    <!-- Lead Message -->
+    <div id="leadText"></div>
+
+    <div id="timerBar">
+      <span class="pill blue">Time: <span id="timerPill">0</span></span>
+    </div>
+
+    <!-- Main Game Area: Controls + Game Canvases + Instructions -->
+    <div id="mainGameArea">
+      <!-- Desktop Controls & Hold Box -->
+      <div id="controls">
+        <!-- <div class="hold-label">HELD PIECE</div> -->
+        <div id="holdBox"><canvas id="holdCanvas" width="64" height="64"></canvas></div>
+        <button id="rotateButton">⟳ W</button>
+        <div class="moveButtons">
+          <button id="moveLeft">← A</button>
+          <button id="moveDown">↓ S</button>
+          <button id="moveRight">→ D</button>
+        </div>
+        <button id="holdButton">⇧ HOLD</button>
+        <button id="dropButton">SPACE DROP</button>
+      </div>
+
       <!-- Game Canvases -->
-    <div id="tetrisWrapper">
-      <canvas id="playerCanvas" class="player" width="300" height="600"></canvas>
-      <div id="scoreBarVertical">
-        <div class="score-bar-container">
-          <div class="score-bar-wrapper">
-            <span class="score-label score-player" id="scoreBarPlayerLabel">0</span>
-            <div class="score-bar player">
-              <div class="score-bar-inner" id="scoreBarPlayerInner"></div>
+      <div id="tetrisWrapper">
+        <canvas id="playerCanvas" class="player" width="300" height="600"></canvas>
+        <div id="scoreBarVertical">
+          <div class="score-bar-container">
+            <div class="score-bar-wrapper">
+              <span class="score-label score-player" id="scoreBarPlayerLabel">0</span>
+              <div class="score-bar player">
+                <div class="score-bar-inner" id="scoreBarPlayerInner"></div>
+              </div>
+              <span class="score-name-player">PLAYER</span>
             </div>
-            <span class="score-name-player">PLAYER</span>
-          </div>
-          <div class="score-bar-wrapper">
-            <span class="score-label score-cpu" id="scoreBarCpuLabel">0</span>
-            <div class="score-bar cpu">
-              <div class="score-bar-inner" id="scoreBarCpuInner"></div>
+            <div class="score-bar-wrapper">
+              <span class="score-label score-cpu" id="scoreBarCpuLabel">0</span>
+              <div class="score-bar cpu">
+                <div class="score-bar-inner" id="scoreBarCpuInner"></div>
+              </div>
+              <span class="score-name-cpu">ASH</span>
             </div>
-            <span class="score-name-cpu">ASH</span>
           </div>
         </div>
-      </div>      <canvas id="cpuCanvas" class="cpu" width="300" height="600"></canvas>
-    </div>
-
-    <!-- Mobile Hold Canvas (only visible on mobile) -->
-    <canvas id="mobileHoldCanvas" width="100" height="100" style="display: none;"></canvas>
-
-    <!-- Solo Mode Instructions -->
-    <div id="soloInstructions">
-      <h2>How to Play Tetris</h2>
-      <div class="instruction-grid">
-        <div class="instruction-item">
-          <span class="key-icon">←→</span>
-          <span class="instruction-text">Move left/right</span>
-        </div>
-        <div class="instruction-item">
-          <span class="key-icon">↑</span>
-          <span class="instruction-text">Rotate piece</span>
-        </div>
-        <div class="instruction-item">
-          <span class="key-icon">↓</span>
-          <span class="instruction-text">Soft drop</span>
-        </div>
-        <div class="instruction-item">
-          <span class="key-icon">SPACE</span>
-          <span class="instruction-text">Hard drop</span>
-        </div>
-        <div class="instruction-item">
-          <span class="key-icon">C</span>
-          <span class="instruction-text">Hold piece</span>
-        </div>
+        <canvas id="cpuCanvas" class="cpu" width="300" height="600"></canvas>
       </div>
-      <p class="goal-text">Clear horizontal lines by filling them completely. Clear 4 lines at once for a TETRIS!</p>
-    </div>
-  </div><!-- Mobile Touch Buttons -->
-  <div id="mobileControls">
-    <div class="mobile-control-row">
-      <button data-cmd="hold">HOLD</button>
-    </div>
-    <div class="mobile-control-row">
-      <button data-cmd="moveLeft">←</button>
-      <button data-cmd="moveDown">↓</button>
-      <button data-cmd="moveRight">→</button>
-    </div>
-    <div class="mobile-control-row">
-      <button data-cmd="rotate">⟳</button>
-    </div>
-    <div class="mobile-control-row">
-      <button data-cmd="hardDrop">SPACE DROP</button>
-    </div>
-  </div>
 
+      <!-- Mobile Hold Canvas (only visible on mobile) -->
+      <canvas id="mobileHoldCanvas" width="100" height="100" style="display: none"></canvas>
 
-  <!-- Chat Interface -->
-  <div id="chatInterface">
-    <div id="chatHeader">
-      <span id="chatTitle">Chat with Ash</span>
-      <button id="chatClose">×</button>
-    </div>
-    <div id="chatMessages">
-      <div id="typingIndicator">
-        <span class="typing-dots">
-          <span class="dot"></span>
-          <span class="dot"></span>
-          <span class="dot"></span>
-        </span>
-        <span class="typing-text">Ash is typing...</span>
+      <!-- Solo Mode Instructions -->
+      <div id="soloInstructions">
+        <h2>How to Play Tetris</h2>
+        <div class="instruction-grid">
+          <div class="instruction-item">
+            <span class="key-icon">←→</span>
+            <span class="instruction-text">Move left/right</span>
+          </div>
+          <div class="instruction-item">
+            <span class="key-icon">↑</span>
+            <span class="instruction-text">Rotate piece</span>
+          </div>
+          <div class="instruction-item">
+            <span class="key-icon">↓</span>
+            <span class="instruction-text">Soft drop</span>
+          </div>
+          <div class="instruction-item">
+            <span class="key-icon">SPACE</span>
+            <span class="instruction-text">Hard drop</span>
+          </div>
+          <div class="instruction-item">
+            <span class="key-icon">C</span>
+            <span class="instruction-text">Hold piece</span>
+          </div>
+        </div>
+        <p class="goal-text">Clear horizontal lines by filling them completely. Clear 4 lines at once for a TETRIS!</p>
       </div>
     </div>
-    <div id="chatInput">
-      <input type="text" id="messageInput" placeholder="Type your message..." disabled>
-      <button id="sendButton" disabled>Send</button>
+    <!-- Mobile Touch Buttons -->
+    <div id="mobileControls">
+      <div class="mobile-control-row">
+        <button data-cmd="hold">HOLD</button>
+      </div>
+      <div class="mobile-control-row">
+        <button data-cmd="moveLeft">←</button>
+        <button data-cmd="moveDown">↓</button>
+        <button data-cmd="moveRight">→</button>
+      </div>
+      <div class="mobile-control-row">
+        <button data-cmd="rotate">⟳</button>
+      </div>
+      <div class="mobile-control-row">
+        <button data-cmd="hardDrop">SPACE DROP</button>
+      </div>
     </div>
-  </div>
 
-  <!-- Tetris Alert -->
-  <div id="tetrisOverlay">WOW TETRIS!</div>
+    <!-- Chat Interface -->
+    <div id="chatInterface">
+      <div id="chatHeader">
+        <span id="chatTitle">Chat with Ash</span>
+        <button id="chatClose">×</button>
+      </div>
+      <div id="chatMessages">
+        <div id="typingIndicator">
+          <span class="typing-dots">
+            <span class="dot"></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
+          </span>
+          <span class="typing-text">Ash is typing...</span>
+        </div>
+      </div>
+      <div id="chatInput">
+        <input type="text" id="messageInput" placeholder="Type your message..." disabled />
+        <button id="sendButton" disabled>Send</button>
+      </div>
+    </div>
 
-  <script src="script.js"></script>
-</body>
+    <!-- Tetris Alert -->
+    <div id="tetrisOverlay">WOW TETRIS!</div>
+
+    <script src="script.js"></script>
+  </body>
 </html>
