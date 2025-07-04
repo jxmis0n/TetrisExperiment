@@ -1,5 +1,6 @@
 /* Reset and Base Styles */
-html, body {
+html,
+body {
   margin: 0;
   padding: 0;
   width: 100%;
@@ -12,40 +13,68 @@ html, body {
 
 /* Shake animation for score bars */
 @keyframes shake {
-  0%, 100% { transform: translateX(0) scale(1); }
-  10%, 30%, 50%, 70%, 90% { 
-    transform: translateX(-3px) scale(1.02); 
+  0%,
+  100% {
+    transform: translateX(0) scale(1);
+  }
+  10%,
+  30%,
+  50%,
+  70%,
+  90% {
+    transform: translateX(-3px) scale(1.02);
     filter: brightness(1.2);
   }
-  20%, 40%, 60%, 80% { 
-    transform: translateX(4px) scale(1.02); 
+  20%,
+  40%,
+  60%,
+  80% {
+    transform: translateX(4px) scale(1.02);
     filter: brightness(1.2);
   }
 }
 
 @keyframes shake-mobile {
-  0%, 100% { transform: translateY(0) scale(1); }
-  10%, 30%, 50%, 70%, 90% { 
-    transform: translateY(-4px) scale(1.03); 
+  0%,
+  100% {
+    transform: translateY(0) scale(1);
+  }
+  10%,
+  30%,
+  50%,
+  70%,
+  90% {
+    transform: translateY(-4px) scale(1.03);
     filter: brightness(1.3);
   }
-  20%, 40%, 60%, 80% { 
-    transform: translateY(4px) scale(1.03); 
+  20%,
+  40%,
+  60%,
+  80% {
+    transform: translateY(4px) scale(1.03);
     filter: brightness(1.3);
   }
 }
 
 @keyframes pulse-shake {
-  0%, 100% { 
-    transform: scale(1) translateX(0); 
+  0%,
+  100% {
+    transform: scale(1) translateX(0);
     filter: brightness(1);
   }
-  15%, 35%, 55%, 75%, 95% { 
-    transform: scale(1.03) translateX(-6px); 
+  15%,
+  35%,
+  55%,
+  75%,
+  95% {
+    transform: scale(1.03) translateX(-6px);
     filter: brightness(1.3);
   }
-  25%, 45%, 65%, 85% { 
-    transform: scale(1.03) translateX(6px); 
+  25%,
+  45%,
+  65%,
+  85% {
+    transform: scale(1.03) translateX(6px);
     filter: brightness(1.3);
   }
   50% {
@@ -68,7 +97,8 @@ html, body {
 
 /* Loading Overlay */
 #loadingOverlay {
-  position: absolute; inset: 0;
+  position: absolute;
+  inset: 0;
   background: #000;
   display: flex;
   flex-direction: column;
@@ -98,8 +128,10 @@ html, body {
 
 /* Countdown Overlay */
 #countdownOverlay {
-  position: absolute; inset: 0;
-  background: rgba(0,0,0,0.8);
+  position: absolute;
+  inset: 0;
+  color: #ffffff;
+  background: rgba(0, 0, 0, 0.8);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -110,8 +142,11 @@ html, body {
 
 /* Score Bar */
 #scoreBars {
-  position: absolute; top: 0; left: 0; right: 0;
-  background: #111;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  background: #ffffff;
   padding: 8px;
   text-align: center;
   z-index: 80;
@@ -124,14 +159,21 @@ html, body {
   font-size: 14px;
   font-weight: bold;
 }
-.pill.blue   { background: rgba(0, 0, 128, 0); }
-.pill.red    { background: rgba(128, 0, 0, 0); }
-.pill.purple { background: rgba(76, 0, 130, 0); }
+.pill.blue {
+  background: rgba(0, 0, 128, 0);
+}
+.pill.red {
+  background: rgba(128, 0, 0, 0);
+}
+.pill.purple {
+  background: rgba(76, 0, 130, 0);
+}
 
 /* Lead Text Animation */
 #leadText {
   position: absolute;
-  top: 50%; left: 50%;
+  top: 50%;
+  left: 50%;
   transform: translate(-50%, -50%) rotate(-10deg);
   font-size: 32px;
   color: hotpink;
@@ -141,8 +183,12 @@ html, body {
   animation: shake 0.1s infinite alternate;
 }
 @keyframes shake {
-  from { transform: translate(-52%, -48%) rotate(-10deg); }
-  to   { transform: translate(-48%, -52%) rotate(-10deg); }
+  from {
+    transform: translate(-52%, -48%) rotate(-10deg);
+  }
+  to {
+    transform: translate(-48%, -52%) rotate(-10deg);
+  }
 }
 
 /* Main Game Area - Flexbox Layout */
@@ -211,7 +257,7 @@ html, body {
   border: 3px solid #495057;
   border-radius: 12px;
   padding: 24px;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.8);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.8);
   font-family: Arial, sans-serif;
 }
 #controls .hold-label {
@@ -237,7 +283,7 @@ html, body {
   width: 64px !important;
   height: 64px !important;
   background: #222 !important;
-  border: 2px solid #FF0000 !important;
+  border: 2px solid #ff0000 !important;
   box-shadow: none !important;
   position: relative !important;
   z-index: 100 !important;
@@ -251,7 +297,7 @@ html, body {
   color: #fff;
   border: 3px solid #111;
   border-radius: 8px;
-  box-shadow: 0 4px #111, 0 6px 12px rgba(0,0,0,0.5), inset 0 1px 0 #fff2;
+  box-shadow: 0 4px #111, 0 6px 12px rgba(0, 0, 0, 0.5), inset 0 1px 0 #fff2;
   font-size: 1.1rem;
   font-weight: bold;
   text-shadow: 0 1px 0 #000, 0 0 2px #fff8;
@@ -273,7 +319,7 @@ html, body {
   color: #fff;
   border: 3px solid #111;
   border-radius: 8px;
-  box-shadow: 0 4px #111, 0 6px 12px rgba(0,0,0,0.5), inset 0 1px 0 #fff2;
+  box-shadow: 0 4px #111, 0 6px 12px rgba(0, 0, 0, 0.5), inset 0 1px 0 #fff2;
   font-weight: bold;
   text-shadow: 0 1px 0 #000, 0 0 2px #fff8;
   padding: 0;
@@ -287,7 +333,7 @@ html, body {
   color: #fff;
   border: 3px solid #111;
   border-radius: 8px;
-  box-shadow: 0 4px #111, 0 6px 12px rgba(0,0,0,0.5), inset 0 1px 0 #fff2;
+  box-shadow: 0 4px #111, 0 6px 12px rgba(0, 0, 0, 0.5), inset 0 1px 0 #fff2;
   margin-bottom: 12px;
   text-shadow: 0 1px 0 #000, 0 0 2px #fff8;
   letter-spacing: 1px;
@@ -302,15 +348,16 @@ html, body {
   color: #fff;
   border: 3px solid #111;
   border-radius: 10px;
-  box-shadow: 0 6px #111, 0 10px 18px rgba(0,0,0,0.6), inset 0 2px 0 #fff2;
+  box-shadow: 0 6px #111, 0 10px 18px rgba(0, 0, 0, 0.6), inset 0 2px 0 #fff2;
   margin-bottom: 0;
   letter-spacing: 2px;
   text-shadow: 0 1px 0 #000, 0 0 2px #fff8;
   padding: 0;
 }
-button:active, #controls button:active {
+button:active,
+#controls button:active {
   background: #111;
-  box-shadow: 0 2px #000, 0 2px 4px rgba(0,0,0,0.6), inset 0 2px 4px #0008;
+  box-shadow: 0 2px #000, 0 2px 4px rgba(0, 0, 0, 0.6), inset 0 2px 4px #0008;
 }
 
 /* Mobile Controls (hidden by default) */
@@ -321,13 +368,26 @@ button:active, #controls button:active {
 /* Alert */
 #tetrisOverlay {
   position: absolute;
-  top: 40%; left: 50%;
+  top: 40%;
+  left: 50%;
   transform: translate(-50%, -50%);
   font-size: 36px;
   color: yellow;
   text-shadow: 0 0 8px orange;
   display: none;
   z-index: 85;
+}
+
+#timerBar {
+  position: absolute;
+  top: 40px;
+  width: 100%;
+  height: 40px;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #ffffff;
 }
 
 /* Solo Mode Instructions Styling */
@@ -338,7 +398,7 @@ button:active, #controls button:active {
   font-weight: bold;
   color: #212529;
   text-align: center;
-  text-shadow: 0 1px 0 rgba(255,255,255,0.8);
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.8);
   letter-spacing: 0.5px;
 }
 
@@ -354,10 +414,10 @@ button:active, #controls button:active {
   align-items: center;
   gap: 16px;
   padding: 8px 12px;
-  background: rgba(255,255,255,0.6);
+  background: rgba(255, 255, 255, 0.6);
   border: 2px solid #dee2e6;
   border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .key-icon {
@@ -372,7 +432,7 @@ button:active, #controls button:active {
   border-radius: 6px;
   font-size: 0.9rem;
   font-weight: bold;
-  box-shadow: 0 3px #212529, 0 4px 8px rgba(0,0,0,0.3);
+  box-shadow: 0 3px #212529, 0 4px 8px rgba(0, 0, 0, 0.3);
   text-shadow: 0 1px 0 #000;
 }
 
@@ -390,7 +450,7 @@ button:active, #controls button:active {
   text-align: center;
   margin: 0;
   padding: 16px;
-  background: rgba(108,117,125,0.1);
+  background: rgba(108, 117, 125, 0.1);
   border-radius: 8px;
   border: 1px solid #dee2e6;
 }
@@ -430,7 +490,7 @@ body.solo-mode #scoreBars {
 /* Change top score bar background color for low competition mode - DESKTOP ONLY */
 @media (min-width: 481px) {
   body.low-competition #scoreBars {
-    background: #111111a1 !important;
+    background: #ffffff !important;
   }
 }
 
@@ -468,7 +528,7 @@ body.solo-mode #scoreBars {
   border-radius: 999px;
   margin: 0;
   background: #f0f0f0;
-  box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
   position: relative;
   display: flex;
   flex-direction: column;
@@ -482,7 +542,7 @@ body.solo-mode #scoreBars {
   position: absolute;
   left: 0;
   bottom: 0;
-  transition: height 0.5s cubic-bezier(.4,2,.6,1);
+  transition: height 0.5s cubic-bezier(0.4, 2, 0.6, 1);
   z-index: 1;
 }
 .score-bar.player .score-bar-inner {
@@ -493,7 +553,7 @@ body.solo-mode #scoreBars {
 }
 .score-label {
   font-size: clamp(1.2rem, 2.5vw, 2.4rem);
-  font-family: 'Arial Black', Impact, Arial, sans-serif;
+  font-family: "Arial Black", Impact, Arial, sans-serif;
   font-weight: 900;
   color: #222;
   text-shadow: 2px 2px 0 #fff, -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 0 0 8px #fff;
@@ -515,9 +575,10 @@ body.solo-mode #scoreBars {
 .score-bar.cpu .score-label {
   color: #dc2626;
 }
-.score-name-player, .score-name-cpu {
+.score-name-player,
+.score-name-cpu {
   font-size: clamp(0.5rem, 0.8vw, 0.7rem);
-  font-family: 'Arial Black', Impact, Arial, sans-serif;
+  font-family: "Arial Black", Impact, Arial, sans-serif;
   font-weight: 900;
   text-align: center;
   width: 3vw;
@@ -528,7 +589,7 @@ body.solo-mode #scoreBars {
   margin-top: 8px;
   flex-shrink: 0;
   color: #333;
-  text-shadow: 0 2px 4px rgba(0,0,0,0.3), 0 1px 0 rgba(255,255,255,0.8);
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3), 0 1px 0 rgba(255, 255, 255, 0.8);
   line-height: 1;
   white-space: nowrap;
   overflow: hidden;
@@ -540,11 +601,15 @@ canvas {
   width: 300px;
   max-width: 300px;
   height: 600px;
-  box-shadow: 0 0 6px rgba(255,255,255,0.2);
+  box-shadow: 0 0 6px rgba(255, 255, 255, 0.2);
   touch-action: none;
 }
-canvas.player { border: 3px solid blue; }
-canvas.cpu    { border: 3px solid red; }
+canvas.player {
+  border: 3px solid blue;
+}
+canvas.cpu {
+  border: 3px solid red;
+}
 
 /* Chat Interface */
 #chatInterface {
@@ -557,7 +622,7 @@ canvas.cpu    { border: 3px solid red; }
   background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
   border: 2px solid #1a252f;
   border-radius: 8px;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.1);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.1);
   display: none;
   flex-direction: column;
   z-index: 150;
@@ -577,7 +642,7 @@ canvas.cpu    { border: 3px solid red; }
   color: #ecf0f1;
   font-size: 1rem;
   font-weight: bold;
-  text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
 }
 
 #chatClose {
@@ -615,7 +680,7 @@ canvas.cpu    { border: 3px solid red; }
   padding: 8px 12px;
   background: rgba(52, 73, 94, 0.8);
   border-radius: 15px;
-  border: 1px solid rgba(255,255,255,0.1);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   align-self: flex-start;
   max-width: 75%;
 }
@@ -642,7 +707,9 @@ canvas.cpu    { border: 3px solid red; }
 }
 
 @keyframes typing {
-  0%, 60%, 100% {
+  0%,
+  60%,
+  100% {
     transform: translateY(0);
     opacity: 0.4;
   }
@@ -672,16 +739,16 @@ canvas.cpu    { border: 3px solid red; }
   background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
   color: white;
   align-self: flex-start;
-  border: 1px solid rgba(255,255,255,0.2);
-  text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
 }
 
 .message.player {
   background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
   color: white;
   align-self: flex-end;
-  border: 1px solid rgba(255,255,255,0.2);
-  text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
 }
 
 @keyframes messageSlideIn {
@@ -755,54 +822,54 @@ canvas.cpu    { border: 3px solid red; }
     gap: 15px;
     padding: 15px;
   }
-  
+
   #controls {
     width: 180px;
   }
-  
+
   #controls .hold-label {
     font-size: 0.9rem;
   }
-  
+
   #holdBox {
     width: 60px;
     height: 60px;
   }
-  
+
   #holdBox canvas {
     width: 48px;
     height: 48px;
   }
-  
+
   #holdButton {
     width: 120px;
     height: 40px;
     font-size: 1.1rem;
   }
-  
+
   .moveButtons button {
     width: 48px;
     height: 48px;
     font-size: 1.1rem;
   }
-  
+
   #rotateButton {
     width: 48px;
     height: 48px;
     font-size: 1.1rem;
   }
-  
+
   #dropButton {
     width: 180px;
     height: 40px;
     font-size: 1.2rem;
   }
-  
+
   #soloInstructions {
     width: 280px;
     padding: 20px;
   }
-  
+
   canvas {
     width: 250px;
     max-width: 250px;
@@ -816,16 +883,16 @@ canvas.cpu    { border: 3px solid red; }
     gap: 10px;
     padding: 10px;
   }
-  
+
   #controls {
     width: 140px;
   }
-  
+
   #soloInstructions {
     width: 220px;
     padding: 16px;
   }
-  
+
   canvas {
     width: 200px;
     max-width: 200px;
@@ -841,7 +908,7 @@ canvas.cpu    { border: 3px solid red; }
     top: 0;
     left: 0;
     right: 0;
-    background: #11111100;
+    background: #ffffff;
     padding: 8px;
     text-align: center;
     z-index: 100;
@@ -852,11 +919,10 @@ canvas.cpu    { border: 3px solid red; }
     height: auto;
     min-height: 60px;
   }
-  
+
   /* Add score text labels */
-  
-  
-    .pill {
+
+  .pill {
     display: block;
     margin: 0;
     padding: 0;
@@ -878,10 +944,10 @@ canvas.cpu    { border: 3px solid red; }
 
     z-index: 2;
   }
-  
+
   /* Score bar fill effect */
   .pill::before {
-    content: '';
+    content: "";
     position: absolute;
     top: 0;
     left: 0;
@@ -891,29 +957,26 @@ canvas.cpu    { border: 3px solid red; }
     border-radius: 14px;
     z-index: -1;
   }
-    /* Specific content for each pill */
- 
+  /* Specific content for each pill */
 
-  
-  
-    /* Specific colors for each pill */
+  /* Specific colors for each pill */
   .pill.red::before {
     background: linear-gradient(90deg, #dc2626 0%, #f14242b2 100%);
   }
-  
+
   .pill.blue::before {
     background: linear-gradient(90deg, #2564eb 0%, #3b83f6bd 100%);
   }
-  
+
   .pill.purple::before {
     background: linear-gradient(90deg, #7c3aed 0%, #8a5cf6bd 100%);
   }
-  
+
   /* Order the pills correctly */
   #cpuPill {
     order: -1;
   }
-  
+
   #playerPill {
     order: 1;
   }
@@ -921,7 +984,7 @@ canvas.cpu    { border: 3px solid red; }
   #scoreBarVertical {
     display: none !important;
   }
-    /* Adjust main game area to account for fixed top score bar */
+  /* Adjust main game area to account for fixed top score bar */
   #mainGameArea {
     position: fixed;
     top: 50px;
@@ -932,7 +995,7 @@ canvas.cpu    { border: 3px solid red; }
     min-width: unset;
     flex-direction: column;
     gap: 10px;
-  }/* Horizontal layout for mobile - player canvas left, CPU canvas right */
+  } /* Horizontal layout for mobile - player canvas left, CPU canvas right */
   #tetrisWrapper {
     display: flex;
     flex-direction: row;
@@ -945,7 +1008,7 @@ canvas.cpu    { border: 3px solid red; }
     width: 100%;
     height: 100%;
   }
-  
+
   /* Player canvas - larger, positioned on the left */
   /* #playerCanvas {
     width: 200px !important;
@@ -953,14 +1016,14 @@ canvas.cpu    { border: 3px solid red; }
     height: 360px !important;
     flex-shrink: 0;
   } */
-  
-       #playerCanvas {
-        width: 170px !important;
-        max-width: 240px !important;
-        height: 280px !important;
-        flex-shrink: 0;
-        top: 20px !important;
-    }
+
+  #playerCanvas {
+    width: 170px !important;
+    max-width: 240px !important;
+    height: 280px !important;
+    flex-shrink: 0;
+    top: 20px !important;
+  }
 
   /* CPU canvas - smaller, positioned on the right */
   /* #cpuCanvas {
@@ -972,18 +1035,17 @@ canvas.cpu    { border: 3px solid red; }
     border-radius: 4px;
   } */
 
+  #cpuCanvas {
+    width: 90px !important;
+    max-width: 160px !important;
+    min-width: 80px !important;
+    height: 150px !important;
+    flex-shrink: 0;
+    border: 2px solid #e74c3c;
+    border-radius: 4px;
+    margin-left: 30px !important;
+  }
 
-    #cpuCanvas {
-        width: 90px !important;
-        max-width: 160px !important;
-        min-width: 80px !important;
-        height: 150px !important;
-        flex-shrink: 0;
-        border: 2px solid #e74c3c;
-        border-radius: 4px;
-        margin-left: 30px !important;
-    }
-  
   /* Single canvas mode (solo or when CPU is hidden) */
   #tetrisWrapper:has(#cpuCanvas[style*="display: none"]) #playerCanvas,
   body.solo-mode #playerCanvas {
@@ -991,11 +1053,13 @@ canvas.cpu    { border: 3px solid red; }
     max-width: 320px !important;
     height: 450px !important;
     margin: 0 auto;
-  }  /* Hide desktop controls on mobile */
+  }
+
+  /* Hide desktop controls on mobile */
   #controls {
     display: none !important;
   }
-  
+
   /* Show mobile-specific hold canvas */
   /* #mobileHoldCanvas {
     display: block !important;
@@ -1009,28 +1073,40 @@ canvas.cpu    { border: 3px solid red; }
     z-index: 999 !important;
   } */
 
+  #mobileHoldCanvas {
+    display: block !important;
+    position: fixed !important;
+    top: 330px !important;
+    right: 25px !important;
+    width: 60px !important;
+    height: 60px !important;
+    border: 2px solid #fff !important;
+    background: #000 !important;
+    z-index: 999 !important;
+  }
 
-      #mobileHoldCanvas {
-        display: block !important;
-        position: fixed !important;
-        top: 330px !important;
-        right: 25px !important;
-        width: 60px !important;
-        height: 60px !important;
-        border: 2px solid #fff !important;
-        background: #000 !important;
-        z-index: 999 !important;
-    }
-  
   /* Hide original holdCanvas on mobile since it's in hidden controls */
   #holdCanvas {
     display: none !important;
   }
-  
+
   /* Hide solo instructions on mobile */
   #soloInstructions {
     display: none !important;
-  }  /* Show mobile controls */
+  }
+
+  /* body.solo-mode #soloInstructions {
+    width: 90px !important;
+    max-width: 160px !important;
+    min-width: 80px !important;
+    height: 150px !important;
+    flex-shrink: 0;
+    border: 2px solid #e74c3c;
+    border-radius: 4px;
+    margin-left: 30px !important;
+  } */
+
+  /* Show mobile controls */
   #mobileControls {
     display: block;
     position: fixed;
@@ -1041,17 +1117,17 @@ canvas.cpu    { border: 3px solid red; }
     z-index: 90;
     background: rgba(0, 0, 0, 0);
   }
-    .mobile-control-row {
+  .mobile-control-row {
     display: flex;
     justify-content: center;
     gap: 6px;
     margin-bottom: 6px;
   }
-  
+
   .mobile-control-row:last-child {
     margin-bottom: 0;
   }
-  
+
   #mobileControls button {
     background: linear-gradient(to bottom, #4a4a4a 0%, #2a2a2a 100%);
     color: #ffffff;
@@ -1060,20 +1136,20 @@ canvas.cpu    { border: 3px solid red; }
     padding: 8px 10px;
     font-size: 11px;
     font-weight: bold;
-    text-shadow: 0 1px 2px rgba(0,0,0,0.8);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.1);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1);
     min-width: 50px;
     cursor: pointer;
     user-select: none;
     touch-action: manipulation;
   }
-  
+
   #mobileControls button:active {
     background: linear-gradient(to bottom, #2a2a2a 0%, #1a1a1a 100%);
     border-color: #000;
     transform: scale(0.95);
-    box-shadow: 0 2px 4px rgba(0,0,0,0.5), inset 0 2px 4px rgba(0,0,0,0.3);
-  }  /* Specific button sizing */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5), inset 0 2px 4px rgba(0, 0, 0, 0.3);
+  } /* Specific button sizing */
   #mobileControls button[data-cmd="hold"] {
     min-width: 70px;
     background: linear-gradient(to bottom, #3a3a3a 0%, #1f1f1f 100%);
@@ -1082,7 +1158,7 @@ canvas.cpu    { border: 3px solid red; }
     letter-spacing: 0.5px;
     padding: 8px 10px;
   }
-  
+
   #mobileControls button[data-cmd="rotate"] {
     min-width: 60px;
     background: linear-gradient(to bottom, #4a4a4a 0%, #2a2a2a 100%);
@@ -1091,7 +1167,7 @@ canvas.cpu    { border: 3px solid red; }
     letter-spacing: 0.5px;
     padding: 8px 10px;
   }
-  
+
   /* Movement buttons (left, down, right) */
   #mobileControls button[data-cmd="moveLeft"],
   #mobileControls button[data-cmd="softDrop"],
@@ -1100,7 +1176,7 @@ canvas.cpu    { border: 3px solid red; }
     padding: 8px 10px;
     font-size: 12px;
   }
-  
+
   /* Space Drop button - positioned separately at bottom */
   #mobileControls button[data-cmd="hardDrop"] {
     position: fixed;
@@ -1114,36 +1190,35 @@ canvas.cpu    { border: 3px solid red; }
     font-size: 10px;
     letter-spacing: 2px;
     padding: 12px 16px;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.15);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.15);
     z-index: 95;
   }
-    /* Create mobile-specific hold label since desktop controls are hidden */  
+  /* Create mobile-specific hold label since desktop controls are hidden */
 
-     #mobileInstructions::after {
-        content: "USE THE BUTTONS BELOW TO PLAY TETRIS.";
-        position: fixed;
-        top: 260px;
-        right: 7px;
-        color: #000000;
-        font-size: 10px;
-        font-weight: bold;
-        text-align: center;
-        width: 100px;
-        z-index: 16;
-        letter-spacing: 1px;
-    }
+  #mobileInstructions::after {
+    content: "USE THE BUTTONS BELOW TO PLAY TETRIS.";
+    position: fixed;
+    top: 260px;
+    right: 7px;
+    color: #000000;
+    font-size: 10px;
+    font-weight: bold;
+    text-align: center;
+    width: 100px;
+    z-index: 16;
+    letter-spacing: 1px;
+  }
   #tetrisWrapper::after {
-        content: "HELD PIECE";
-        position: fixed;
-        top: 320px;
-        right: 7px;
-        color: #000000;
-        font-size: 10px;
-        font-weight: bold;
-        text-align: center;
-        width: 100px;
-        z-index: 16;
-        letter-spacing: 1px;
-    }
-
+    content: "HELD PIECE";
+    position: fixed;
+    top: 320px;
+    right: 7px;
+    color: #000000;
+    font-size: 10px;
+    font-weight: bold;
+    text-align: center;
+    width: 100px;
+    z-index: 16;
+    letter-spacing: 1px;
+  }
 }
