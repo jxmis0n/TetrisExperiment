@@ -11,6 +11,12 @@ body {
   font-family: Arial, sans-serif;
 }
 
+/* helper classes */
+.pr-5 {
+  padding-right: 5px;
+}
+
+
 /* Shake animation for score bars */
 @keyframes shake {
   0%,
@@ -146,7 +152,7 @@ body {
   top: 0;
   left: 0;
   right: 0;
-  background: #ffffff;
+  background: #DDDDDD;
   padding: 8px;
   text-align: center;
   z-index: 80;
@@ -387,7 +393,7 @@ button:active,
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #ffffff;
+  background: #DDDDDD;
 }
 
 /* Solo Mode Instructions Styling */
@@ -490,7 +496,7 @@ body.solo-mode #scoreBars {
 /* Change top score bar background color for low competition mode - DESKTOP ONLY */
 @media (min-width: 481px) {
   body.low-competition #scoreBars {
-    background: #ffffff !important;
+    background: #DDDDDD !important;
   }
 }
 
@@ -908,7 +914,7 @@ canvas.cpu {
     top: 0;
     left: 0;
     right: 0;
-    background: #ffffff;
+    background: #DDDDDD;
     padding: 8px;
     text-align: center;
     z-index: 100;
@@ -931,18 +937,19 @@ canvas.cpu {
     font-weight: bold;
     min-width: 140px;
     text-align: center;
-    width: 180px;
+    /*width: 180px;*/
     height: 24px;
     position: relative;
     overflow: hidden;
     background: #333;
-    border: 2px solid #555;
+    /*border: 2px solid #555;*/
     display: flex;
     align-items: center;
     justify-content: center;
     color: rgb(27, 26, 26);
 
-    z-index: 2;
+    /* set to 9999 to bring to foreground */
+    z-index: 9999;
   }
 
   /* Score bar fill effect */
