@@ -50,7 +50,7 @@
   const cpuPill = document.getElementById("cpuPill");
 
   if (mode === "vs") {
-    cpuPill.innerHTML = `<span class="pr-5">${cpuName}</span> <b><span id='cpuScorePill'>0</span> pts</b>`;
+    cpuPill.innerHTML = `<span class="pr-5">${cpuName}:</span> <b><span id='cpuScorePill'>0</span> pts</b>`;
     if (competition === "low") {
       cpuPill.className = "pill purple";
       document.getElementById("cpuCanvas").style.borderColor = "purple";

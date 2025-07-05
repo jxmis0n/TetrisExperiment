@@ -908,6 +908,7 @@ canvas.cpu {
 
 /* Mobile styles for iPhone SE and similar devices */
 @media (max-width: 480px) {
+  /* solo stuff */
   body.solo-mode #mainGameArea {
     flex-direction: row !important;
     align-items: flex-start !important;
@@ -916,24 +917,24 @@ canvas.cpu {
     padding: 8px !important;
   }
 
-  /* Left pane: the game canvas */
+  /* left pane */
   body.solo-mode #playerCanvas {
     flex: 0 0 130px !important; /* fixed 130px width */
     width: 130px !important;
     height: 208px !important;
   }
 
-  /* Right pane: instructions */
+  /* right pane: instructions */
   body.solo-mode #soloInstructions {
     display: flex !important;
-    flex: 0 0 100px !important; /* fixed 130px width */
+    flex: 0 0 100px !important; /* fixed 100px width */
     /*max-height: 208px !important; !* match canvas height *!*/
-    overflow-y: auto;            /* scroll if content overflows */
+    overflow-y: auto;
     margin-top: 20px !important;
     padding: 15px !important;
   }
 
-  /* Make instruction text smaller to fit */
+  /* make instruction text smaller to fit */
   body.solo-mode #soloInstructions h2 {
     font-size: 1rem !important;
     margin-bottom: 6px !important;
@@ -956,6 +957,42 @@ canvas.cpu {
     padding: 4px !important;
   }
 
+  /* icons */
+  /* we need different icons for mobile as SPACE and C dont make any fcking sense */
+  #soloInstructions .instruction-grid .instruction-item:nth-child(2) .key-icon,
+  #soloInstructions .instruction-grid .instruction-item:nth-child(4) .key-icon,
+  #soloInstructions .instruction-grid .instruction-item:nth-child(5) .key-icon {
+    position: relative !important;
+    font-size: 0 !important;        /* hide the original text */
+    line-height: 1;                  /* collapse but keep box */
+  }
+
+  #soloInstructions .instruction-grid .instruction-item:nth-child(2) .key-icon::before {
+    content: '⟳';
+  }
+
+  #soloInstructions .instruction-grid .instruction-item:nth-child(4) .key-icon::before {
+    content: "DROP";
+  }
+
+  #soloInstructions .instruction-grid .instruction-item:nth-child(5) .key-icon::before {
+    content: "HOLD";
+  }
+
+  #soloInstructions .instruction-grid .instruction-item:nth-child(2) .key-icon::before,
+  #soloInstructions .instruction-grid .instruction-item:nth-child(4) .key-icon::before,
+  #soloInstructions .instruction-grid .instruction-item:nth-child(5) .key-icon::before {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    white-space: nowrap;
+    font-size: 0.75rem;
+    font-weight: bold;
+    color: #fff;
+  }
+
+  /* timer bar */
   #timerBar {
     position: static;
     top: 40px;
@@ -1142,7 +1179,7 @@ canvas.cpu {
   #mobileHoldCanvas {
     display: block !important;
     position: fixed !important;
-    top: 330px !important;
+    top: 565px !important;
     right: 25px !important;
     width: 60px !important;
     height: 60px !important;
@@ -1176,9 +1213,9 @@ canvas.cpu {
   #mobileControls {
     display: block;
     position: fixed;
-    top: 370px;
+    top: 550px;
     left: 10px;
-    width: 180px;
+    /*width: 180px;*/
     padding: 8px;
     z-index: 90;
     background: rgba(0, 0, 0, 0);
@@ -1200,11 +1237,11 @@ canvas.cpu {
     border: 2px solid #1a1a1a;
     border-radius: 6px;
     padding: 8px 10px;
-    font-size: 11px;
+    font-size: 31px;
     font-weight: bold;
     text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1);
-    min-width: 50px;
+    min-width: 65px;
     cursor: pointer;
     user-select: none;
     touch-action: manipulation;
@@ -1217,7 +1254,7 @@ canvas.cpu {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5), inset 0 2px 4px rgba(0, 0, 0, 0.3);
   } /* Specific button sizing */
   #mobileControls button[data-cmd="hold"] {
-    min-width: 70px;
+    /*min-width: 70px;*/
     background: linear-gradient(to bottom, #3a3a3a 0%, #1f1f1f 100%);
     border: 2px solid #0a0a0a;
     font-size: 10px;
@@ -1226,10 +1263,10 @@ canvas.cpu {
   }
 
   #mobileControls button[data-cmd="rotate"] {
-    min-width: 60px;
+    /*min-width: 60px;*/
     background: linear-gradient(to bottom, #4a4a4a 0%, #2a2a2a 100%);
     border: 2px solid #1a1a1a;
-    font-size: 10px;
+    /*font-size: 10px;*/
     letter-spacing: 0.5px;
     padding: 8px 10px;
   }
@@ -1238,7 +1275,7 @@ canvas.cpu {
   #mobileControls button[data-cmd="moveLeft"],
   #mobileControls button[data-cmd="softDrop"],
   #mobileControls button[data-cmd="moveRight"] {
-    min-width: 45px;
+    /*min-width: 45px;*/
     padding: 8px 10px;
     font-size: 12px;
   }
@@ -1274,10 +1311,11 @@ canvas.cpu {
     z-index: 16;
     letter-spacing: 1px;
   }
+  /* label for hold button */
   #tetrisWrapper::after {
     content: "HELD PIECE";
     position: fixed;
-    top: 320px;
+    top: 550px;
     right: 7px;
     color: #000000;
     font-size: 10px;
