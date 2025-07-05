@@ -1316,10 +1316,10 @@ canvas.cpu {
 /* vs‐mode canvas override */
 /* dirty but works??? */
 body:not(.solo-mode) #tetrisWrapper canvas.player {
-  width: 256px !important;
-  height: 386px !important;
+  width: 200px !important;
+  height: 400px !important;
 }
 body:not(.solo-mode) #tetrisWrapper canvas.cpu {
-  width: 130px !important;
-  height: 260px !important;
+  width: 200px !important;
+  height: 400px !important;
 }
