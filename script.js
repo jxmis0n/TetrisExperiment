@@ -890,9 +890,9 @@
         startCountdown();
       } else {
         // after two rounds, go on to the next section
-        window.parent.document
-              .getElementById('NextButton')
-              .click();
+
+        // tell Qualtrics “advance me”
+        window.parent.postMessage({ type: 'soloContinue' }, '*');
         // or if you want to just reload
         // location.reload();
 
