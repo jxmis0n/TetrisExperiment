@@ -1196,10 +1196,11 @@ canvas.cpu {
 
   /* Show mobile controls */
   #mobileControls {
-    display: block;
+    display: flex;
     position: fixed;
-    top: 550px;
-    left: 10px;
+    top: 680px;
+    gap: 18px;
+    /*left: 10px;*/
     /*width: 180px;*/
     padding: 8px;
     z-index: 90;
