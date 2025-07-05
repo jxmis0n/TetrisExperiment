@@ -11,6 +11,12 @@ body {
   font-family: Arial, sans-serif;
 }
 
+/* helper classes */
+.pr-5 {
+  padding-right: 5px;
+}
+
+
 /* Shake animation for score bars */
 @keyframes shake {
   0%,
@@ -146,7 +152,7 @@ body {
   top: 0;
   left: 0;
   right: 0;
-  background: #ffffff;
+  background: #DDDDDD;
   padding: 8px;
   text-align: center;
   z-index: 80;
@@ -387,7 +393,7 @@ button:active,
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #ffffff;
+  background: #DDDDDD;
 }
 
 /* Solo Mode Instructions Styling */
@@ -490,7 +496,7 @@ body.solo-mode #scoreBars {
 /* Change top score bar background color for low competition mode - DESKTOP ONLY */
 @media (min-width: 481px) {
   body.low-competition #scoreBars {
-    background: #ffffff !important;
+    background: #DDDDDD !important;
   }
 }
 
@@ -902,13 +908,109 @@ canvas.cpu {
 
 /* Mobile styles for iPhone SE and similar devices */
 @media (max-width: 480px) {
+  /* solo stuff */
+  body.solo-mode #mainGameArea {
+    flex-direction: row !important;
+    align-items: flex-start !important;
+    justify-content: center !important;
+    gap: 8px !important;
+    padding: 8px !important;
+  }
+
+  /* left pane */
+  body.solo-mode #playerCanvas {
+    flex: 0 0 130px !important; /* fixed 130px width */
+    width: 130px !important;
+    height: 208px !important;
+  }
+
+  /* right pane: instructions */
+  body.solo-mode #soloInstructions {
+    display: flex !important;
+    flex: 0 0 100px !important; /* fixed 100px width */
+    /*max-height: 208px !important; !* match canvas height *!*/
+    overflow-y: auto;
+    margin-top: 20px !important;
+    padding: 15px !important;
+  }
+
+  /* make instruction text smaller to fit */
+  body.solo-mode #soloInstructions h2 {
+    font-size: 1rem !important;
+    margin-bottom: 6px !important;
+  }
+  body.solo-mode .instruction-item {
+    /*gap: 6px !important;*/
+    margin-left: -8px;
+    padding: 4px 6px !important;
+  }
+  body.solo-mode .instruction-text {
+    font-size: 0.75rem !important;
+  }
+  body.solo-mode .key-icon {
+    font-size: 0.7rem !important;
+    min-width: 32px !important;
+    height: 20px !important;
+  }
+  body.solo-mode .goal-text {
+    font-size: 0.65rem !important;
+    padding: 4px !important;
+  }
+
+  /* icons */
+  /* we need different icons for mobile as SPACE and C dont make any fcking sense */
+  #soloInstructions .instruction-grid .instruction-item:nth-child(2) .key-icon,
+  #soloInstructions .instruction-grid .instruction-item:nth-child(4) .key-icon,
+  #soloInstructions .instruction-grid .instruction-item:nth-child(5) .key-icon {
+    position: relative !important;
+    font-size: 0 !important;        /* hide the original text */
+    line-height: 1;                  /* collapse but keep box */
+  }
+
+  #soloInstructions .instruction-grid .instruction-item:nth-child(2) .key-icon::before {
+    content: '⟳';
+  }
+
+  #soloInstructions .instruction-grid .instruction-item:nth-child(4) .key-icon::before {
+    content: "DROP";
+  }
+
+  #soloInstructions .instruction-grid .instruction-item:nth-child(5) .key-icon::before {
+    content: "HOLD";
+  }
+
+  #soloInstructions .instruction-grid .instruction-item:nth-child(2) .key-icon::before,
+  #soloInstructions .instruction-grid .instruction-item:nth-child(4) .key-icon::before,
+  #soloInstructions .instruction-grid .instruction-item:nth-child(5) .key-icon::before {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    white-space: nowrap;
+    font-size: 0.75rem;
+    font-weight: bold;
+    color: #fff;
+  }
+
+  /* timer bar */
+  #timerBar {
+    position: static;
+    top: 40px;
+    width: 100%;
+    height: 40px;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: right;
+  }
+
   /* Make score bars vertical and stacked at top */
   #scoreBars {
     position: fixed;
     top: 0;
     left: 0;
     right: 0;
-    background: #ffffff;
+    background: #DDDDDD;
     padding: 8px;
     text-align: center;
     z-index: 100;
@@ -931,18 +1033,19 @@ canvas.cpu {
     font-weight: bold;
     min-width: 140px;
     text-align: center;
-    width: 180px;
+    /*width: 180px;*/
     height: 24px;
     position: relative;
     overflow: hidden;
     background: #333;
-    border: 2px solid #555;
+    /*border: 2px solid #555;*/
     display: flex;
     align-items: center;
     justify-content: center;
     color: rgb(27, 26, 26);
 
-    z-index: 2;
+    /* set to 9999 to bring to foreground */
+    z-index: 9999;
   }
 
   /* Score bar fill effect */
@@ -1009,31 +1112,16 @@ canvas.cpu {
     height: 100%;
   }
 
-  /* Player canvas - larger, positioned on the left */
-  /* #playerCanvas {
-    width: 200px !important;
-    max-width: 240px !important;
-    height: 360px !important;
-    flex-shrink: 0;
-  } */
-
+  /* this controls the size of the player canvas */
+  /* actually there is a mobile reset at the bottom of this file because the */
+  /* media queries seem to be intefering? */
   #playerCanvas {
-    width: 170px !important;
-    max-width: 240px !important;
-    height: 280px !important;
+    width: 256px !important;
+    /*max-width: 240px !important;*/
+    height: 386px !important;
     flex-shrink: 0;
     top: 20px !important;
   }
-
-  /* CPU canvas - smaller, positioned on the right */
-  /* #cpuCanvas {
-    width: 120px !important;
-    max-width: 120px !important;
-    height: 180px !important;
-    flex-shrink: 0;
-    border: 2px solid #e74c3c;
-    border-radius: 4px;
-  } */
 
   #cpuCanvas {
     width: 90px !important;
@@ -1076,7 +1164,7 @@ canvas.cpu {
   #mobileHoldCanvas {
     display: block !important;
     position: fixed !important;
-    top: 330px !important;
+    top: 565px !important;
     right: 25px !important;
     width: 60px !important;
     height: 60px !important;
@@ -1108,11 +1196,12 @@ canvas.cpu {
 
   /* Show mobile controls */
   #mobileControls {
-    display: block;
+    display: flex;
     position: fixed;
-    top: 370px;
-    left: 10px;
-    width: 180px;
+    top: 680px;
+    gap: 18px;
+    /*left: 10px;*/
+    /*width: 180px;*/
     padding: 8px;
     z-index: 90;
     background: rgba(0, 0, 0, 0);
@@ -1134,11 +1223,11 @@ canvas.cpu {
     border: 2px solid #1a1a1a;
     border-radius: 6px;
     padding: 8px 10px;
-    font-size: 11px;
+    font-size: 31px;
     font-weight: bold;
     text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1);
-    min-width: 50px;
+    min-width: 65px;
     cursor: pointer;
     user-select: none;
     touch-action: manipulation;
@@ -1151,7 +1240,7 @@ canvas.cpu {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5), inset 0 2px 4px rgba(0, 0, 0, 0.3);
   } /* Specific button sizing */
   #mobileControls button[data-cmd="hold"] {
-    min-width: 70px;
+    /*min-width: 70px;*/
     background: linear-gradient(to bottom, #3a3a3a 0%, #1f1f1f 100%);
     border: 2px solid #0a0a0a;
     font-size: 10px;
@@ -1160,10 +1249,10 @@ canvas.cpu {
   }
 
   #mobileControls button[data-cmd="rotate"] {
-    min-width: 60px;
+    /*min-width: 60px;*/
     background: linear-gradient(to bottom, #4a4a4a 0%, #2a2a2a 100%);
     border: 2px solid #1a1a1a;
-    font-size: 10px;
+    /*font-size: 10px;*/
     letter-spacing: 0.5px;
     padding: 8px 10px;
   }
@@ -1172,7 +1261,7 @@ canvas.cpu {
   #mobileControls button[data-cmd="moveLeft"],
   #mobileControls button[data-cmd="softDrop"],
   #mobileControls button[data-cmd="moveRight"] {
-    min-width: 45px;
+    /*min-width: 45px;*/
     padding: 8px 10px;
     font-size: 12px;
   }
@@ -1208,10 +1297,11 @@ canvas.cpu {
     z-index: 16;
     letter-spacing: 1px;
   }
+  /* label for hold button */
   #tetrisWrapper::after {
     content: "HELD PIECE";
     position: fixed;
-    top: 320px;
+    top: 550px;
     right: 7px;
     color: #000000;
     font-size: 10px;
@@ -1221,4 +1311,15 @@ canvas.cpu {
     z-index: 16;
     letter-spacing: 1px;
   }
+}
+
+/* vs‐mode canvas override */
+/* dirty but works??? */
+body:not(.solo-mode) #tetrisWrapper canvas.player {
+  width: 256px !important;
+  height: 386px !important;
+}
+body:not(.solo-mode) #tetrisWrapper canvas.cpu {
+  width: 130px !important;
+  height: 260px !important;
 }

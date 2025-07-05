@@ -50,24 +50,25 @@
   const cpuPill = document.getElementById("cpuPill");
 
   if (mode === "vs") {
-    cpuPill.innerHTML = `${cpuName}: <b><span id='cpuScorePill'>0</span> pts</b>`;
+    cpuPill.innerHTML = `<span class="pr-5">${cpuName}:</span> <b><span id='cpuScorePill'>0</span> pts</b>`;
     if (competition === "low") {
       cpuPill.className = "pill purple";
       document.getElementById("cpuCanvas").style.borderColor = "purple";
     }
   }
 
+  // removed this for now, should be handled by CSS
   // --- Responsive Canvas Sizing ---
-  if (mode === "vs") {
-    if (isMobile && competition === "high") {
-      document.getElementById("playerCanvas").style.maxWidth = "90vw";
-      document.getElementById("cpuCanvas").style.maxWidth = "60vw";
-    }
-    if (isMobile && competition === "low") {
-      // Show CPU canvas in low competition mode as well
-      document.getElementById("cpuCanvas").style.maxWidth = "60vw";
-    }
-  }
+  // if (mode === "vs") {
+  //   if (isMobile && competition === "high") {
+  //     document.getElementById("playerCanvas").style.maxWidth = "90vw";
+  //     document.getElementById("cpuCanvas").style.maxWidth = "60vw";
+  //   }
+  //   if (isMobile && competition === "low") {
+  //     // Show CPU canvas in low competition mode as well
+  //     document.getElementById("cpuCanvas").style.maxWidth = "60vw";
+  //   }
+  // }
 
   // Animate bar to full over 4 seconds
   requestAnimationFrame(() => (loadingBarFg.style.width = "100%"));
