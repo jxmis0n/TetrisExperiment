@@ -91,7 +91,8 @@ Qualtrics.SurveyEngine.addOnReady(function() {
 
 	// run setup routines
 	initializeChatDataFields();
-	var displayRound = getOrSetSequenceRound(); // used to index into message/field maps
+	// var displayRound = getOrSetSequenceRound(); // used to index into message/field maps
+	var displayROUND = FILE_ROUND;
 	console.log("Display round:", displayRound);
 
 	// ensure embedded data for competition and mode are up-to-date
