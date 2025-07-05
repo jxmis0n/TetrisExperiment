@@ -44,7 +44,7 @@
   }
 
   // --- CPU Name & Pill Color ---
-  const names = ["Ash", "Jordan", "Riley", "Taylor"];
+  const names = ["Opponent"];
   const cpuName = names[Math.floor(Math.random() * names.length)];
   const cpuPill = document.getElementById("cpuPill");
 
