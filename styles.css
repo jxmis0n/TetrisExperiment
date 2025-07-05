@@ -908,6 +908,17 @@ canvas.cpu {
 
 /* Mobile styles for iPhone SE and similar devices */
 @media (max-width: 480px) {
+  #timerBar {
+    position: static;
+    top: 40px;
+    width: 100%;
+    height: 40px;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: right;
+  }
+
   /* Make score bars vertical and stacked at top */
   #scoreBars {
     position: fixed;
