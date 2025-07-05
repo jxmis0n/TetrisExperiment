@@ -885,6 +885,13 @@
 
       if (!isFinal) {
         // restart round 2
+        // reset and clear the old timer
+        clearInterval(gameTimer);
+        gameTimer = null;
+        gameTime = 0;
+        timerPil.textContent = '0:00';
+
+        // new tetris board
         window.player = new TetrisBoard('playerCanvas', 'human');
         lastTime = performance.now();
         startCountdown();
