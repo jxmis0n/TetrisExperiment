@@ -1112,31 +1112,16 @@ canvas.cpu {
     height: 100%;
   }
 
-  /* Player canvas - larger, positioned on the left */
-  /* #playerCanvas {
-    width: 200px !important;
-    max-width: 240px !important;
-    height: 360px !important;
-    flex-shrink: 0;
-  } */
-
+  /* this controls the size of the player canvas */
+  /* actually there is a mobile reset at the bottom of this file because the */
+  /* media queries seem to be intefering? */
   #playerCanvas {
-    width: 170px !important;
-    max-width: 240px !important;
-    height: 280px !important;
+    width: 256px !important;
+    /*max-width: 240px !important;*/
+    height: 386px !important;
     flex-shrink: 0;
     top: 20px !important;
   }
-
-  /* CPU canvas - smaller, positioned on the right */
-  /* #cpuCanvas {
-    width: 120px !important;
-    max-width: 120px !important;
-    height: 180px !important;
-    flex-shrink: 0;
-    border: 2px solid #e74c3c;
-    border-radius: 4px;
-  } */
 
   #cpuCanvas {
     width: 90px !important;
@@ -1325,4 +1310,15 @@ canvas.cpu {
     z-index: 16;
     letter-spacing: 1px;
   }
+}
+
+/* vs‐mode canvas override */
+/* dirty but works??? */
+body:not(.solo-mode) #tetrisWrapper canvas.player {
+  width: 256px !important;
+  height: 386px !important;
+}
+body:not(.solo-mode) #tetrisWrapper canvas.cpu {
+  width: 130px !important;
+  height: 260px !important;
 }
