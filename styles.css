@@ -908,6 +908,54 @@ canvas.cpu {
 
 /* Mobile styles for iPhone SE and similar devices */
 @media (max-width: 480px) {
+  body.solo-mode #mainGameArea {
+    flex-direction: row !important;
+    align-items: flex-start !important;
+    justify-content: center !important;
+    gap: 8px !important;
+    padding: 8px !important;
+  }
+
+  /* Left pane: the game canvas */
+  body.solo-mode #playerCanvas {
+    flex: 0 0 130px !important; /* fixed 130px width */
+    width: 130px !important;
+    height: 208px !important;
+  }
+
+  /* Right pane: instructions */
+  body.solo-mode #soloInstructions {
+    display: flex !important;
+    flex: 0 0 100px !important; /* fixed 130px width */
+    /*max-height: 208px !important; !* match canvas height *!*/
+    overflow-y: auto;            /* scroll if content overflows */
+    margin-top: 20px !important;
+    padding: 15px !important;
+  }
+
+  /* Make instruction text smaller to fit */
+  body.solo-mode #soloInstructions h2 {
+    font-size: 1rem !important;
+    margin-bottom: 6px !important;
+  }
+  body.solo-mode .instruction-item {
+    /*gap: 6px !important;*/
+    margin-left: -8px;
+    padding: 4px 6px !important;
+  }
+  body.solo-mode .instruction-text {
+    font-size: 0.75rem !important;
+  }
+  body.solo-mode .key-icon {
+    font-size: 0.7rem !important;
+    min-width: 32px !important;
+    height: 20px !important;
+  }
+  body.solo-mode .goal-text {
+    font-size: 0.65rem !important;
+    padding: 4px !important;
+  }
+
   #timerBar {
     position: static;
     top: 40px;
