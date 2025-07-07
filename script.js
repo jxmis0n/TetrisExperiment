@@ -258,14 +258,14 @@
       this.readyTimer = 0; // Adjust CPU difficulty based on competition level
       if (mode === "cpu") {
         if (competition === "high") {
-          this.readyDelay = 50; // Same as player (no delay for equal spawning speed)
-          this.dropInterval = 550; // Same as player speed
-          this.moveInterval = 300; // Same as player speed
+          this.readyDelay = 50; // .5 Slower than player (delay for equal spawning speed)
+          this.dropInterval = 590; // Slower than player speed
+          this.moveInterval = 350; // Same as player speed
           this.skillLevel = "expert"; // Expert AI
         } else {
           this.readyDelay = Math.random() * 1000 + 500; // Moderate start delay (0.5-1.5s)
           this.dropInterval = 1200; // Slower drop speed than player
-          this.moveInterval = 800; // Slower move speed than player
+          this.moveInterval = 900; // Slower move speed than player
           this.skillLevel = "expert"; // Expert AI (same smart logic as high competition)
         }
       } else {
