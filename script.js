@@ -106,6 +106,10 @@
     }, 1000);
   }
 
+const canvas = document.getElementById("playerCanvas");
+canvas.tabIndex = 0;  // make focusable
+canvas.focus();       // immediately grab keyboard focus
+
   // --- Tetris Logic (Shapes, Colors, Heuristics, Board Class) ---
   const SHAPES = {
     I: [[[1, 1, 1, 1]], [[1], [1], [1], [1]]],
