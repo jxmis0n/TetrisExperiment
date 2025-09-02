@@ -90,6 +90,29 @@
   if (mode === "solo") {
     document.body.classList.add("solo-mode");
     document.getElementById("loadingText").textContent = "Loading Tetris...";
+
+    // On mobile, place the hold preview canvas underneath the instructions
+    function placeHoldCanvasForSolo() {
+      const isMobileViewport = window.innerWidth <= 480;
+      const hold = document.getElementById("mobileHoldCanvas");
+      const instr = document.getElementById("soloInstructions");
+      if (!hold || !instr) return;
+      if (isMobileViewport) {
+        // Append as the last child of the instructions so it sits underneath
+        if (hold.parentElement !== instr) {
+          instr.appendChild(hold);
+        }
+        hold.style.display = "block";
+        hold.style.position = "static";
+        hold.width = 64;
+        hold.height = 64;
+      } else {
+        // For desktop solo, do not show the mobile hold canvas
+        hold.style.display = "none";
+      }
+    }
+    placeHoldCanvasForSolo();
+    window.addEventListener("resize", placeHoldCanvasForSolo);
   }
 
   // --- Competition Mode Setup ---

@@ -222,12 +222,12 @@ body {
   left: 0;
   right: 0;
   display: flex;
-  flex-direction: column; /* Column layout to center game */
+  flex-direction: column; /* vertical stack */
   align-items: center;
-  justify-content: center;
-  padding: clamp(10px, 2vw, 20px);
+  justify-content: flex-start; /* push content up to use space */
+  padding: clamp(8px, 1.8vw, 16px);
   box-sizing: border-box;
-  gap: clamp(10px, 2vw, 20px);
+  gap: clamp(8px, 1.5vw, 16px);
   min-width: 1000px; /* Minimum width to maintain layout */
   min-height: 500px; /* Minimum height to maintain layout */
   overflow: hidden; /* Prevent content from spilling out */
@@ -404,7 +404,7 @@ body.solo-mode #mainGameArea {
   flex: 1 1 auto;
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: flex-start; /* align to top so wasted space above disappears */
   gap: 12px;
   padding: 8px;
 }
@@ -658,9 +658,9 @@ body.solo-mode #scoreBars .pill.purple {
 
 body.solo-mode #mainGameArea {
   flex-direction: row !important;
-  justify-content: center !important;
-  align-items: center !important;
-  gap: 40px !important;
+  justify-content: flex-start !important; /* push content up/left */
+  align-items: flex-start !important;
+  gap: 24px !important;
 }
 
 body.solo-mode #soloInstructions {
@@ -669,7 +669,8 @@ body.solo-mode #soloInstructions {
 }
 
 body.solo-mode #tetrisWrapper {
-  justify-content: center;
+  justify-content: flex-start;
+  align-items: flex-start;
   margin: 0;
 }
 
@@ -679,6 +680,44 @@ body.solo-mode #playerCanvas {
 
 body.solo-mode #scoreBars {
   text-align: center;
+}
+
+/* Desktop-specific tweaks for SOLO mode */
+@media (min-width: 481px) {
+  body.solo-mode #soloInstructions {
+    width: clamp(220px, 35vw, 320px);
+    padding: 12px;
+    margin-top: 8px;
+  }
+  body.solo-mode #soloInstructions h2 {
+    font-size: clamp(1.2rem, 2vw, 1.6rem);
+    margin-bottom: 12px;
+  }
+  body.solo-mode .instruction-grid { gap: 10px; }
+  body.solo-mode .instruction-item { padding: 6px 10px; }
+  body.solo-mode .instruction-text { font-size: 0.95rem; }
+}
+
+/* Narrow desktop / large-phone landscape: make solo view use full width */
+@media (max-width: 768px) and (min-width: 481px) {
+  #mainGameArea { min-width: unset; padding: 8px; gap: 8px; }
+  body.solo-mode #mainGameArea {
+    flex-direction: row !important;
+    align-items: flex-start !important;
+    justify-content: center !important;
+    gap: 12px !important;
+  }
+  body.solo-mode #tetrisWrapper { flex: 0 0 60vw; }
+  body.solo-mode #tetrisWrapper canvas.player {
+    width: 60vw !important;
+    height: 120vw !important; /* maintain ~1:2 ratio */
+    max-width: 420px !important;
+    max-height: 840px !important;
+  }
+  body.solo-mode #soloInstructions {
+    flex: 0 0 36vw;
+    width: 36vw;
+  }
 }
 
 /* Show vertical score bar between canvases for low competition mode on desktop */
@@ -1138,11 +1177,13 @@ canvas.cpu {
     padding: 8px !important;
   }
 
-  /* left pane */
+  /* left pane: use viewport-based width to fill space */
   body.solo-mode #playerCanvas {
-    flex: 0 0 130px !important; /* fixed 130px width */
-    width: 130px !important;
-    height: 208px !important;
+    flex: 0 0 58vw !important;
+    width: 58vw !important;
+    height: 116vw !important; /* 1:2 aspect ratio */
+    max-width: 320px !important;
+    max-height: 640px !important;
   }
 
   /* right pane: instructions */
@@ -1216,7 +1257,7 @@ canvas.cpu {
   /* timer bar under score pills */
   #timerBar {
     position: fixed;
-    top: calc(var(--scorebars-h, 36px));
+    top: calc(var(--scorebars-h, 36px) + 6px); /* small gap */
     left: 0;
     right: 0;
     width: 100%;
@@ -1314,7 +1355,7 @@ canvas.cpu {
   /* Adjust main game area to account for fixed top score bar */
   #mainGameArea {
     position: fixed;
-    top: calc(var(--top-bars-h, 90px));
+    top: calc(var(--scorebars-h, 36px) + 6px + 30px); /* below header and timer */
     bottom: 100px; /* reclaimed space */
     left: 0;
     right: 0;
@@ -1368,9 +1409,9 @@ canvas.cpu {
     display: none !important;
   }
   
-  /* High competition mobile adjustments - no need for extra top space */
+  /* High competition mobile: honor measured header height */
   body.high-competition #mainGameArea {
-    top: 60px !important; /* Same as other modes on mobile */
+    top: calc(var(--top-bars-h, 90px)) !important;
   }
   
   /* High competition mobile - hide the horizontal bar, use mobile score pills instead */
@@ -1396,13 +1437,27 @@ canvas.cpu {
     display: block !important;
     position: fixed !important;
     top: 380px !important; /* Under CPU canvas */
-    right: 35px !important; /* Centered under CPU */
-    width: 40px !important;
-    height: 40px !important;
+    right: 25px !important; /* closer to CPU canvas center */
+    width: 64px !important;
+    height: 64px !important;
     border: 2px solid #fff !important;
     background: #000 !important;
     z-index: 999 !important;
     border-radius: 4px !important;
+  }
+
+  /* In solo mode, embed the hold square inside the instructions card */
+  body.solo-mode #soloInstructions #mobileHoldCanvas {
+    position: static !important; /* flows in document under the content */
+    display: block !important;
+    width: 56px !important;
+    height: 56px !important;
+    margin: 10px auto 0 auto !important; /* centered underneath */
+    border: 2px solid #fff !important;
+    border-radius: 4px !important;
+    background: #000 !important;
+    z-index: 1 !important;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
   }
 
   /* Hide original holdCanvas on mobile since it's in hidden controls */
@@ -1410,9 +1465,18 @@ canvas.cpu {
     display: none !important;
   }
 
-  /* Hide solo instructions on mobile */
-  #soloInstructions {
+  /* Hide instructions on mobile only when NOT in solo mode */
+  body:not(.solo-mode) #soloInstructions {
     display: none !important;
+  }
+
+  /* Solo instructions visible on mobile and sized to share width */
+  body.solo-mode #soloInstructions {
+    display: flex !important;
+    width: 38vw !important;
+    min-width: 140px !important;
+    max-width: 240px !important;
+    padding: 10px !important;
   }
 
   /* body.solo-mode #soloInstructions {
