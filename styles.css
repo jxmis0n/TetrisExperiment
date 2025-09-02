@@ -12,7 +12,7 @@ body {
 }
 
 /* Layout variables measured at runtime (with sensible fallbacks) */
-:root {
+ :root {
   --top-bars-h: 60px;     /* score bar + timer bar combined */
   --controls-h: 120px;    /* bottom controls height */
 }
@@ -158,13 +158,19 @@ body {
   top: 0;
   left: 0;
   right: 0;
-  background: linear-gradient(135deg, #e8e8e8 0%, #d0d0d0 100%);
-  padding: 6px; /* Smaller padding */
-  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 8px 6px;
   z-index: 80;
-  min-height: 28px; /* Smaller height */
-  border-bottom: 1px solid #bbb;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  min-height: 36px;
+  background: rgba(255, 255, 255, 0.35);
+  backdrop-filter: saturate(120%) blur(6px);
+  -webkit-backdrop-filter: saturate(120%) blur(6px);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  box-shadow: 0 1px 8px rgba(0, 0, 0, 0.06) inset;
+  border-radius: 0 0 12px 12px;
 }
 .pill {
   display: inline-block;
@@ -555,17 +561,26 @@ button:active,
 
 #timerBar {
   position: absolute;
-  top: 30px; /* Smaller top position */
+  top: calc(var(--scorebars-h, 36px)); /* sit directly under top text */
   width: 100%;
-  height: 28px; /* Smaller height */
+  height: 34px; /* pill height */
   text-align: center;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #e8e8e8 0%, #d0d0d0 100%);
-  border-bottom: 1px solid #bbb;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  z-index: 75;
+  background: transparent;
+  border-bottom: none;
+  box-shadow: none;
+  z-index: 79; /* below the score text strip */
+  pointer-events: none;
+}
+
+#timerBar .pill {
+  background: rgba(255,255,255,0.65);
+  border: 1px solid rgba(0,0,0,0.1);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+  border-radius: 18px;
+  font-weight: 800;
 }
 
 /* Solo Mode Instructions Styling */
@@ -682,15 +697,28 @@ body.solo-mode #scoreBars {
 #scoreBarVertical {
   display: flex;
   flex-direction: row;
-  align-items: flex-start;
+  align-items: center; /* vertically center relative to canvases */
   justify-content: center;
   min-width: clamp(50px, 8vw, 70px);
   margin: 0 clamp(8px, 2vw, 16px);
-  height: 100%; /* Match parent height for alignment */
+  height: auto; /* size to contents so bars can center to canvases */
 }
 
-/* High competition mode - DESKTOP ONLY: Keep bars in center/middle position */
-/* No special styling needed - bars remain in their original center position */
+/* High competition desktop: hide top pills to avoid duplicate scores */
+@media (min-width: 481px) {
+  /* In high competition, keep a slim top bar to host the timer and scores */
+  body.high-competition #scoreBars {
+    display: flex !important;
+  }
+  body.high-competition #scoreBars .pill {
+    background: transparent;
+    border: 0;
+    box-shadow: none;
+    font-weight: 800;
+  }
+}
+
+/* High competition mode - DESKTOP ONLY: Keep bars centered */
 .score-bar-container {
   display: flex;
   flex-direction: row;
@@ -702,16 +730,18 @@ body.solo-mode #scoreBars {
   display: flex;
   flex-direction: column;
   align-items: center;
-  height: 100%;
-  justify-content: space-between;
+  justify-content: center; /* keep label, bar, and name close together */
+  gap: clamp(6px, 1vh, 12px);
+  height: auto; /* avoid stretching which pushes labels far away */
+  position: relative;
 }
 .score-bar {
   width: clamp(15px, 2.5vw, 36px);
   min-width: 15px;
   max-width: 36px;
-  height: clamp(150px, 45vh, 500px); /* Responsive height */
+  height: min(700px, 60vh); /* match player canvas height on desktop */
   min-height: 150px;
-  max-height: 500px;
+  max-height: 700px;
   border-radius: 999px;
   margin: 0;
   background: #f0f0f0;
@@ -739,22 +769,18 @@ body.solo-mode #scoreBars {
   background: #dc2626;
 }
 .score-label {
-  font-size: clamp(1rem, 2vw, 2.4rem); /* More responsive scaling */
-  font-family: "Arial Black", Impact, Arial, sans-serif;
-  font-weight: 900;
+  position: static;
+  font-size: clamp(1rem, 2vw, 1.6rem);
+  font-family: Arial, sans-serif;
+  font-weight: 800;
   color: #222;
-  text-shadow: 2px 2px 0 #fff, -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 0 0 8px #fff;
-  letter-spacing: 1px;
+  text-shadow: 0 1px 0 #fff;
+  letter-spacing: 0.5px;
   line-height: 1;
-  text-align: center;
-  margin-bottom: clamp(4px, 1vh, 8px);
+  margin: 0 0 6px 0; /* just above the bar */
   background: none;
   border: none;
   padding: 0;
-  min-width: 0;
-  box-shadow: none;
-  border-radius: 0;
-  position: static;
 }
 .score-bar.player .score-label {
   color: #3b82f6;
@@ -764,8 +790,8 @@ body.solo-mode #scoreBars {
 }
 .score-name-player,
 .score-name-cpu {
-  font-size: clamp(0.6rem, 1vw, 0.9rem) !important; /* Larger and more visible */
-  font-family: "Arial Black", Impact, Arial, sans-serif;
+  font-size: clamp(0.65rem, 1vw, 0.9rem) !important;
+  font-family: Arial, sans-serif;
   font-weight: 900;
   text-align: center;
   width: clamp(50px, 4vw, 90px) !important; /* Wider to fit text */
@@ -773,7 +799,7 @@ body.solo-mode #scoreBars {
   max-width: 90px;
   letter-spacing: 0.5px;
   text-transform: uppercase;
-  margin-top: clamp(6px, 1.5vh, 10px) !important;
+  margin-top: 0 !important;
   flex-shrink: 0;
   color: #333 !important;
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3), 0 1px 0 rgba(255, 255, 255, 0.8);
@@ -1187,16 +1213,19 @@ canvas.cpu {
     color: #fff;
   }
 
-  /* timer bar */
+  /* timer bar under score pills */
   #timerBar {
-    position: static;
-    top: 40px;
+    position: fixed;
+    top: calc(var(--scorebars-h, 36px));
+    left: 0;
+    right: 0;
     width: 100%;
-    height: 40px;
+    height: 30px;
     text-align: center;
     display: flex;
     align-items: center;
-    justify-content: right;
+    justify-content: center;
+    z-index: 101;
   }
 
   /* Make score bars vertical and stacked at top */
@@ -1285,14 +1314,14 @@ canvas.cpu {
   /* Adjust main game area to account for fixed top score bar */
   #mainGameArea {
     position: fixed;
-    top: 60px;
-    bottom: 120px; /* Leave space for mobile controls */
+    top: calc(var(--top-bars-h, 90px));
+    bottom: 100px; /* reclaimed space */
     left: 0;
     right: 0;
-    padding: 10px;
+    padding: 8px;
     min-width: unset;
     flex-direction: column;
-    gap: 10px;
+    gap: 8px;
   } /* Horizontal layout for mobile - better spacing */
   #tetrisWrapper {
     display: flex;
@@ -1309,20 +1338,20 @@ canvas.cpu {
 
   /* Canvas sizing for mobile - 3:1 aspect ratio */
   #playerCanvas {
-    width: 240px !important;
-    max-width: 240px !important;
-    height: 360px !important;
+    width: 260px !important;
+    max-width: 260px !important;
+    height: 400px !important;
     flex-shrink: 0;
   }
 
   #cpuCanvas {
-    width: 80px !important;
-    max-width: 80px !important;
-    height: 120px !important; /* 3:1 aspect ratio for more compact view */
+    width: 84px !important;
+    max-width: 84px !important;
+    height: 128px !important;
     flex-shrink: 0;
     border: 2px solid #e74c3c;
     border-radius: 4px;
-    margin-left: 15px !important;
+    margin-left: 12px !important;
   }
 
   /* Single canvas mode (solo or when CPU is hidden) */
@@ -1466,16 +1495,16 @@ canvas.cpu {
   /* Space Drop button - positioned separately at bottom */
   #mobileControls button[data-cmd="hardDrop"] {
     position: fixed;
-    bottom: 10px;
-    left: 10px;
-    right: 10px;
+    bottom: 8px;
+    left: 8px;
+    right: 8px;
     min-width: unset;
-    width: calc(100% - 20px);
+    width: calc(100% - 16px);
     background: linear-gradient(to bottom, #555 0%, #111 100%);
     border: 3px solid #000;
     font-size: 10px;
     letter-spacing: 2px;
-    padding: 12px 16px;
+    padding: 10px 12px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.15);
     z-index: 95;
   }

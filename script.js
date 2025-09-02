@@ -40,13 +40,15 @@
   }
 
   function measureLayout() {
-    // Only impact desktop layout; mobile has its own rules
     const isDesktop = window.innerWidth > 480;
-    const topBarsH = (scoreBarsEl?.getBoundingClientRect().height || 0) +
-                     (timerBarEl?.getBoundingClientRect().height || 0);
+    const scoreBarH = (scoreBarsEl?.getBoundingClientRect().height || 0);
+    const timerH = (timerBarEl?.getBoundingClientRect().height || 0);
+    const topBarsH = scoreBarH + timerH;
     const controlsVisible = controlsEl && getComputedStyle(controlsEl).display !== "none";
     const controlsH = controlsVisible ? controlsEl.getBoundingClientRect().height : 0;
-    setCssPx("--top-bars-h", isDesktop ? topBarsH : 60);
+    // Always expose variables so both desktop and mobile can use them
+    setCssPx("--top-bars-h", topBarsH || 60);
+    setCssPx("--scorebars-h", scoreBarH || 36);
     setCssPx("--controls-h", isDesktop ? controlsH : 120);
   }
 
@@ -760,8 +762,14 @@ canvas.focus();       // immediately grab keyboard focus
         scoreBars.setAttribute("data-cpu-score", c);
       }
     }
-    // Update mobile pill fill percentages
-    if (competition !== "low") {
+    // Update mobile pill fill percentages (desktop high-competition hides pills)
+    const pillsVisible = (() => {
+      const el = document.getElementById("scoreBars");
+      if (!el) return false;
+      const styles = getComputedStyle(el);
+      return styles.display !== "none";
+    })();
+    if (competition !== "low" && pillsVisible) {
       const playerPill = document.getElementById("playerPill");
       const cpuPill = document.getElementById("cpuPill");
       if (playerPill || cpuPill) {
@@ -816,7 +824,7 @@ canvas.focus();       // immediately grab keyboard focus
         }
       }
       // Shake mobile/horizontal score pills when scores increase
-      if (competition !== "low") {
+      if (competition !== "low" && pillsVisible) {
         if (playerScoreIncrease) {
           const playerPill = document.getElementById("playerPill");
           if (playerPill) {
@@ -833,7 +841,7 @@ canvas.focus();       // immediately grab keyboard focus
         }
       }
 
-      if (cpuScoreIncrease && mode === "vs") {
+      if (cpuScoreIncrease && mode === "vs" && pillsVisible) {
         const cpuPill = document.getElementById("cpuPill");
         if (cpuPill) {
           // Use different animation for mobile vs desktop
