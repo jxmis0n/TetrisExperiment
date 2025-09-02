@@ -6,6 +6,7 @@
   const valence = params.get("valence") || "positive";
   const round = parseInt(params.get("round")) || 1;
   const mode = params.get("mode") || "vs"; // 'vs' or 'solo'
+  const debug = params.get("debug") === "true"; // Add debug mode
   const isMobile = /Mobi|Android|iPhone|iPad|iPod/.test(navigator.userAgent);
 
   let plays = 0
@@ -27,6 +28,26 @@
   const loadingText = document.getElementById("loadingText");
   const scoreBarVertical = document.getElementById("scoreBarVertical");
   const timerPil = document.getElementById("timerPill");
+  const countdownOverlay = document.getElementById("countdownOverlay");
+  
+  // --- Countdown function (moved here for debug mode access) ---
+  function startCountdown() {
+    let count = 3;
+    countdownOverlay.style.visibility = "visible";
+    countdownOverlay.textContent = count;
+    const timer = setInterval(() => {
+      count--;
+      if (count > 0) {
+        countdownOverlay.textContent = count;
+      } else {
+        clearInterval(timer);
+        countdownOverlay.style.visibility = "hidden";
+        lastTime = performance.now();
+        startTimer();
+        requestAnimationFrame(gameLoop);
+      }
+    }, 1000);
+  }
 
   // Add debug logging for garbage system
   console.log("Garbage system enabled for high competition:", competition === "high" && mode === "vs");
@@ -70,41 +91,31 @@
   //   }
   // }
 
-  // Animate bar to full over 4 seconds
-  requestAnimationFrame(() => (loadingBarFg.style.width = "100%"));
+  // Debug mode - skip loading entirely
+  if (debug) {
+    console.log("DEBUG MODE: Skipping loading screen");
+    loadingOverlay.style.display = "none";
+    startCountdown();
+  } else {
+    // Normal loading sequence
+    // Animate bar to full over 4 seconds
+    requestAnimationFrame(() => (loadingBarFg.style.width = "100%"));
 
-  // After 4s, show "Opponent Found" for 1s, then hide overlay and start countdown
-  setTimeout(() => {
-    if (mode === "solo") {
-      loadingText.textContent = "Ready to Play!";
-    } else {
-      loadingText.textContent = "Opponent Found";
-    }
+    // After 4s, show "Opponent Found" for 1s, then hide overlay and start countdown
     setTimeout(() => {
-      loadingOverlay.style.display = "none";
-      startCountdown();
-    }, 1000);
-  }, 4000);
-
-  // --- Countdown for Game Start ---
-  const countdownOverlay = document.getElementById("countdownOverlay");
-  function startCountdown() {
-    let count = 3;
-    countdownOverlay.style.visibility = "visible";
-    countdownOverlay.textContent = count;
-    const timer = setInterval(() => {
-      count--;
-      if (count > 0) {
-        countdownOverlay.textContent = count;
+      if (mode === "solo") {
+        loadingText.textContent = "Ready to Play!";
       } else {
-        clearInterval(timer);
-        countdownOverlay.style.visibility = "hidden";
-        lastTime = performance.now();
-        startTimer();
-        requestAnimationFrame(gameLoop);
+        loadingText.textContent = "Opponent Found";
       }
-    }, 1000);
+      setTimeout(() => {
+        loadingOverlay.style.display = "none";
+        startCountdown();
+      }, 1000);
+    }, 4000);
   }
+
+  // Countdown function moved above
 
 const canvas = document.getElementById("playerCanvas");
 canvas.tabIndex = 0;  // make focusable
@@ -740,6 +751,8 @@ canvas.focus();       // immediately grab keyboard focus
     if (maxScore === 0) maxScore = 1;
     const playerPct = p / maxScore;
     const cpuPct = c / maxScore;
+    
+    // All bars are vertical now, always use height
     if (playerInner) playerInner.style.height = playerPct * 100 + "%";
     if (cpuInner && mode === "vs") cpuInner.style.height = cpuPct * 100 + "%";
 

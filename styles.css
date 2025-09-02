@@ -146,24 +146,29 @@ body {
   z-index: 90;
 }
 
-/* Score Bar */
+/* Score Bar - Smaller and more styled for desktop */
 #scoreBars {
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
-  background: #DDDDDD;
-  padding: 8px;
+  background: linear-gradient(135deg, #e8e8e8 0%, #d0d0d0 100%);
+  padding: 6px; /* Smaller padding */
   text-align: center;
   z-index: 80;
+  min-height: 28px; /* Smaller height */
+  border-bottom: 1px solid #bbb;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 .pill {
   display: inline-block;
-  margin: 0 8px;
-  padding: 4px 12px;
-  border-radius: 12px;
-  font-size: 14px;
+  margin: 0 6px; /* Smaller margin */
+  padding: 2px 10px; /* Smaller padding */
+  border-radius: 10px;
+  font-size: 12px; /* Smaller font */
   font-weight: bold;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.3);
 }
 .pill.blue {
   background: rgba(0, 0, 128, 0);
@@ -197,45 +202,186 @@ body {
   }
 }
 
-/* Main Game Area - Flexbox Layout */
+/* Main Game Area - Responsive Layout with smaller top */
 #mainGameArea {
   position: absolute;
-  top: 50px;
-  bottom: 50px;
+  top: 60px; /* Smaller top space for styled top area */
+  bottom: 120px; /* Space for bottom controls on ALL devices */
   left: 0;
   right: 0;
   display: flex;
+  flex-direction: column; /* Column layout to center game */
+  align-items: center;
+  justify-content: center;
+  padding: clamp(10px, 2vw, 20px);
+  box-sizing: border-box;
+  gap: clamp(10px, 2vw, 20px);
+  min-width: 1000px; /* Minimum width to maintain layout */
+  min-height: 500px; /* Minimum height to maintain layout */
+  overflow: hidden; /* Prevent content from spilling out */
+}
+
+/* Solo mode: keep horizontal layout for desktop */
+body.solo-mode #mainGameArea {
+  flex-direction: row !important;
+  justify-content: space-between !important;
+}
+
+/* High competition mode - NO special adjustments for desktop since bars stay in center */
+@media (min-width: 481px) {
+  /* Remove special top spacing since bars aren't moving to top */
+}
+
+/* Height-based responsive adjustments */
+@media (max-height: 800px) {
+  #mainGameArea {
+    top: 70px !important;
+    bottom: 20px !important; /* Less bottom space on desktop */
+    padding: 10px !important;
+  }
+  
+  body.high-competition #mainGameArea {
+    top: 140px !important;
+  }
+  
+  canvas {
+    width: min(300px, 25vw) !important;
+    height: min(600px, 50vh) !important;
+  }
+  
+  canvas.cpu {
+    width: min(200px, 20vw) !important;
+    height: min(400px, 35vh) !important;
+  }
+  
+  /* Scale middle bars for smaller height */
+  .score-bar {
+    height: clamp(120px, 35vh, 400px) !important;
+  }
+  
+  .score-name-player,
+  .score-name-cpu {
+    font-size: clamp(0.5rem, 0.8vw, 0.8rem) !important;
+    min-width: 40px !important;
+  }
+}
+
+@media (max-height: 700px) {
+  #mainGameArea {
+    top: 60px !important;
+    bottom: 15px !important; /* Less bottom space on desktop */
+    padding: 8px !important;
+  }
+  
+  body.high-competition #mainGameArea {
+    top: 120px !important;
+  }
+  
+  canvas {
+    width: min(250px, 22vw) !important;
+    height: min(500px, 42vh) !important;
+  }
+  
+  canvas.cpu {
+    width: min(170px, 18vw) !important;
+    height: min(340px, 30vh) !important;
+  }
+  
+  #controls {
+    padding: 8px !important;
+    max-width: min(500px, 75vw) !important;
+  }
+  
+  /* Further scale middle bars */
+  .score-bar {
+    height: clamp(100px, 30vh, 350px) !important;
+    width: clamp(12px, 2vw, 28px) !important;
+  }
+  
+  .score-name-player,
+  .score-name-cpu {
+    font-size: clamp(0.45rem, 0.7vw, 0.7rem) !important;
+    min-width: 35px !important;
+  }
+  
+  .score-label {
+    font-size: clamp(0.8rem, 1.5vw, 1.8rem) !important;
+  }
+}
+
+@media (max-height: 600px) {
+  #mainGameArea {
+    top: 50px !important;
+    bottom: 10px !important; /* Minimal bottom space on desktop */
+    padding: 5px !important;
+  }
+  
+  body.high-competition #mainGameArea {
+    top: 100px !important;
+  }
+  
+  canvas {
+    width: min(200px, 20vw) !important;
+    height: min(400px, 38vh) !important;
+  }
+  
+  canvas.cpu {
+    width: min(140px, 16vw) !important;
+    height: min(280px, 28vh) !important;
+  }
+  
+  #soloInstructions {
+    width: min(240px, 22vw) !important;
+    padding: 8px !important;
+    font-size: 0.85rem !important;
+  }
+  
+  /* Minimum scale for very small heights */
+  .score-bar {
+    height: clamp(80px, 25vh, 300px) !important;
+    width: clamp(10px, 1.8vw, 24px) !important;
+  }
+  
+  .score-name-player,
+  .score-name-cpu {
+    font-size: clamp(0.4rem, 0.6vw, 0.6rem) !important;
+    min-width: 30px !important;
+  }
+  
+  .score-label {
+    font-size: clamp(0.6rem, 1.2vw, 1.5rem) !important;
+  }
+  
+  #scoreBarVertical {
+    min-width: clamp(40px, 6vw, 60px) !important;
+    margin: 0 clamp(4px, 1vw, 12px) !important;
+  }
+}
+
+/* Controls - NEW bottom style for ALL devices */
+#controls {
+  position: fixed;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  flex: 0 0 auto;
+  width: 90%;
+  max-width: min(600px, 80vw);
+  background: rgba(0, 0, 0, 0.8);
+  border: 2px solid #333;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+  padding: clamp(8px, 2vh, 15px);
+  color: #fff;
+  display: flex;
   flex-direction: row;
   align-items: center;
-  justify-content: space-between;
-  padding: 20px;
-  box-sizing: border-box;
-  gap: 20px;
-  min-width: 1000px; /* Minimum width to maintain layout */
+  justify-content: space-around;
+  gap: clamp(6px, 1vw, 12px);
+  z-index: 90;
 }
 
-/* Controls - Fixed width, no absolute positioning */
-#controls {
-  position: static;
-  left: unset;
-  top: unset;
-  transform: none;
-  flex: 0 0 auto;
-  width: 220px;
-  background: none;
-  border: none;
-  border-radius: 0;
-  box-shadow: none;
-  padding: 0;
-  color: #111;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 18px;
-  z-index: 10;
-}
-
-/* Game Area */
+/* Game Area - Keep original desktop layout */
 #tetrisWrapper {
   position: static;
   top: unset;
@@ -250,21 +396,26 @@ body {
   padding: 8px;
 }
 
-/* Solo Mode Instructions - Fixed width */
+/* Solo Mode Instructions - Responsive width */
 #soloInstructions {
   position: static;
   right: unset;
   top: unset;
   transform: none;
   flex: 0 0 auto;
-  width: 320px;
+  width: min(300px, 25vw);
+  min-width: 200px;
   display: none; /* Hidden by default, shown in solo mode */
   background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
   border: 3px solid #495057;
   border-radius: 12px;
-  padding: 24px;
+  padding: clamp(12px, 2vh, 20px);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.8);
   font-family: Arial, sans-serif;
+  align-self: flex-start;
+  margin-top: clamp(10px, 2vh, 20px);
+  max-height: 70vh;
+  overflow-y: auto;
 }
 #controls .hold-label {
   font-size: 1.1rem;
@@ -275,36 +426,37 @@ body {
   text-align: center;
 }
 #holdBox {
-  width: 80px;
-  height: 80px;
-  /* border: 2.5px solid #111; */
+  width: 60px;
+  height: 60px;
   background: #222;
-  margin-bottom: 10px;
+  margin: 0;
   display: flex;
   align-items: center;
   justify-content: center;
   border: 2px solid #555;
+  border-radius: 8px;
 }
 #holdBox canvas {
-  width: 64px !important;
-  height: 64px !important;
+  width: 48px !important;
+  height: 48px !important;
   background: #222 !important;
-  border: 2px solid #ff0000 !important;
+  border: 1px solid #555 !important;
   box-shadow: none !important;
   position: relative !important;
   z-index: 100 !important;
   opacity: 1 !important;
+  border-radius: 4px !important;
 }
 #holdButton {
-  width: 120px;
-  height: 48px;
-  margin-bottom: 12px;
-  background: #222;
+  width: clamp(60px, 8vw, 80px);
+  height: clamp(30px, 4vh, 40px);
+  margin: 0;
+  background: #333;
   color: #fff;
-  border: 3px solid #111;
+  border: 2px solid #555;
   border-radius: 8px;
-  box-shadow: 0 4px #111, 0 6px 12px rgba(0, 0, 0, 0.5), inset 0 1px 0 #fff2;
-  font-size: 1.1rem;
+  box-shadow: 0 2px #111, 0 4px 8px rgba(0, 0, 0, 0.3), inset 0 1px 0 #fff2;
+  font-size: clamp(0.7rem, 1.5vw, 0.9rem);
   font-weight: bold;
   text-shadow: 0 1px 0 #000, 0 0 2px #fff8;
   letter-spacing: 1px;
@@ -312,51 +464,50 @@ body {
 }
 .moveButtons {
   display: flex;
-  gap: 16px;
-  margin-bottom: 12px;
-  width: 100%;
+  gap: 8px;
+  margin: 0;
   justify-content: center;
 }
 .moveButtons button {
-  width: 56px;
-  height: 56px;
-  font-size: 1.3rem;
-  background: #222;
+  width: clamp(36px, 6vw, 48px);
+  height: clamp(30px, 4vh, 40px);
+  font-size: clamp(0.9rem, 1.8vw, 1.1rem);
+  background: #333;
   color: #fff;
-  border: 3px solid #111;
+  border: 2px solid #555;
   border-radius: 8px;
-  box-shadow: 0 4px #111, 0 6px 12px rgba(0, 0, 0, 0.5), inset 0 1px 0 #fff2;
+  box-shadow: 0 2px #111, 0 4px 8px rgba(0, 0, 0, 0.3), inset 0 1px 0 #fff2;
   font-weight: bold;
   text-shadow: 0 1px 0 #000, 0 0 2px #fff8;
   padding: 0;
 }
 #rotateButton {
   width: 48px;
-  height: 48px;
-  font-size: 1.1rem;
+  height: 40px;
+  font-size: 1rem;
   font-weight: bold;
-  background: #222;
+  background: #333;
   color: #fff;
-  border: 3px solid #111;
+  border: 2px solid #555;
   border-radius: 8px;
-  box-shadow: 0 4px #111, 0 6px 12px rgba(0, 0, 0, 0.5), inset 0 1px 0 #fff2;
-  margin-bottom: 12px;
+  box-shadow: 0 2px #111, 0 4px 8px rgba(0, 0, 0, 0.3), inset 0 1px 0 #fff2;
+  margin: 0;
   text-shadow: 0 1px 0 #000, 0 0 2px #fff8;
   letter-spacing: 1px;
   padding: 0;
 }
 #dropButton {
-  width: 220px;
-  height: 48px;
-  font-size: 1.5rem;
+  width: clamp(100px, 15vw, 120px);
+  height: clamp(30px, 4vh, 40px);
+  font-size: clamp(0.8rem, 1.5vw, 1rem);
   font-weight: bold;
-  background: linear-gradient(to bottom, #444 0%, #111 100%);
+  background: linear-gradient(to bottom, #555 0%, #222 100%);
   color: #fff;
-  border: 3px solid #111;
+  border: 2px solid #444;
   border-radius: 10px;
-  box-shadow: 0 6px #111, 0 10px 18px rgba(0, 0, 0, 0.6), inset 0 2px 0 #fff2;
-  margin-bottom: 0;
-  letter-spacing: 2px;
+  box-shadow: 0 3px #111, 0 6px 12px rgba(0, 0, 0, 0.4), inset 0 1px 0 #fff2;
+  margin: 0;
+  letter-spacing: 1px;
   text-shadow: 0 1px 0 #000, 0 0 2px #fff8;
   padding: 0;
 }
@@ -366,9 +517,20 @@ button:active,
   box-shadow: 0 2px #000, 0 2px 4px rgba(0, 0, 0, 0.6), inset 0 2px 4px #0008;
 }
 
-/* Mobile Controls (hidden by default) */
+/* Mobile Controls (hidden by default, positioned at bottom when shown) */
 #mobileControls {
   display: none;
+  position: fixed;
+  bottom: 10px;
+  left: 10px;
+  right: 10px;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px;
+  z-index: 95;
+  background: rgba(0, 0, 0, 0.8);
+  border-radius: 12px;
+  border: 2px solid #333;
 }
 
 /* Alert */
@@ -386,14 +548,17 @@ button:active,
 
 #timerBar {
   position: absolute;
-  top: 40px;
+  top: 30px; /* Smaller top position */
   width: 100%;
-  height: 40px;
+  height: 28px; /* Smaller height */
   text-align: center;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #DDDDDD;
+  background: linear-gradient(135deg, #e8e8e8 0%, #d0d0d0 100%);
+  border-bottom: 1px solid #bbb;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  z-index: 75;
 }
 
 /* Solo Mode Instructions Styling */
@@ -469,6 +634,13 @@ body.solo-mode #scoreBars .pill.purple {
   display: none !important;
 }
 
+body.solo-mode #mainGameArea {
+  flex-direction: row !important;
+  justify-content: center !important;
+  align-items: center !important;
+  gap: 40px !important;
+}
+
 body.solo-mode #soloInstructions {
   display: flex !important;
   flex-direction: column;
@@ -476,8 +648,7 @@ body.solo-mode #soloInstructions {
 
 body.solo-mode #tetrisWrapper {
   justify-content: center;
-  margin-left: 0;
-  margin-right: 0;
+  margin: 0;
 }
 
 body.solo-mode #playerCanvas {
@@ -500,21 +671,24 @@ body.solo-mode #scoreBars {
   }
 }
 
-/* Vertical Score Bars */
+/* Vertical Score Bars - Responsive sizing */
 #scoreBarVertical {
   display: flex;
   flex-direction: row;
   align-items: flex-start;
   justify-content: center;
-  min-width: 70px;
-  margin: 0 16px;
+  min-width: clamp(50px, 8vw, 70px);
+  margin: 0 clamp(8px, 2vw, 16px);
   height: 100%; /* Match parent height for alignment */
 }
+
+/* High competition mode - DESKTOP ONLY: Keep bars in center/middle position */
+/* No special styling needed - bars remain in their original center position */
 .score-bar-container {
   display: flex;
   flex-direction: row;
   align-items: flex-start;
-  gap: 18px;
+  gap: clamp(10px, 2vw, 18px);
   height: 100%;
 }
 .score-bar-wrapper {
@@ -525,12 +699,12 @@ body.solo-mode #scoreBars {
   justify-content: space-between;
 }
 .score-bar {
-  width: 2.5vw;
-  min-width: 18px;
+  width: clamp(15px, 2.5vw, 36px);
+  min-width: 15px;
   max-width: 36px;
-  height: 60vh;
-  min-height: 180px;
-  max-height: 600px;
+  height: clamp(150px, 45vh, 500px); /* Responsive height */
+  min-height: 150px;
+  max-height: 500px;
   border-radius: 999px;
   margin: 0;
   background: #f0f0f0;
@@ -558,7 +732,7 @@ body.solo-mode #scoreBars {
   background: #dc2626;
 }
 .score-label {
-  font-size: clamp(1.2rem, 2.5vw, 2.4rem);
+  font-size: clamp(1rem, 2vw, 2.4rem); /* More responsive scaling */
   font-family: "Arial Black", Impact, Arial, sans-serif;
   font-weight: 900;
   color: #222;
@@ -566,7 +740,7 @@ body.solo-mode #scoreBars {
   letter-spacing: 1px;
   line-height: 1;
   text-align: center;
-  margin-bottom: 8px;
+  margin-bottom: clamp(4px, 1vh, 8px);
   background: none;
   border: none;
   padding: 0;
@@ -583,38 +757,48 @@ body.solo-mode #scoreBars {
 }
 .score-name-player,
 .score-name-cpu {
-  font-size: clamp(0.5rem, 0.8vw, 0.7rem);
+  font-size: clamp(0.6rem, 1vw, 0.9rem) !important; /* Larger and more visible */
   font-family: "Arial Black", Impact, Arial, sans-serif;
   font-weight: 900;
   text-align: center;
-  width: 3vw;
-  min-width: 40px;
-  max-width: 80px;
+  width: clamp(50px, 4vw, 90px) !important; /* Wider to fit text */
+  min-width: 50px !important; /* Larger minimum */
+  max-width: 90px;
   letter-spacing: 0.5px;
   text-transform: uppercase;
-  margin-top: 8px;
+  margin-top: clamp(6px, 1.5vh, 10px) !important;
   flex-shrink: 0;
-  color: #333;
+  color: #333 !important;
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3), 0 1px 0 rgba(255, 255, 255, 0.8);
   line-height: 1;
   white-space: nowrap;
-  overflow: hidden;
+  overflow: visible !important; /* Show full text */
+  text-overflow: clip; /* Don't add ellipsis */
+  display: block !important; /* Ensure they display */
 }
 
-/* Canvas Styling */
+/* Canvas Styling - Larger default sizes */
 canvas {
   background: #000;
-  width: 300px;
-  max-width: 300px;
-  height: 600px;
+  width: min(350px, 28vw); /* Bigger default */
+  height: min(700px, 60vh); /* Bigger default */
+  max-width: 350px;
+  max-height: 700px;
   box-shadow: 0 0 6px rgba(255, 255, 255, 0.2);
   touch-action: none;
 }
 canvas.player {
   border: 3px solid blue;
+  width: min(350px, 28vw);
+  height: min(700px, 60vh);
 }
+/* Desktop CPU canvas - bigger responsive sizing */
 canvas.cpu {
-  border: 3px solid red;
+  border: 2px solid red;
+  width: min(240px, 22vw) !important; /* Bigger */
+  height: min(480px, 45vh) !important; /* Bigger */
+  max-width: 240px !important;
+  max-height: 480px !important;
 }
 
 /* Chat Interface */
@@ -827,10 +1011,12 @@ canvas.cpu {
     min-width: 800px;
     gap: 15px;
     padding: 15px;
+    bottom: 120px; /* Account for bottom controls */
   }
 
   #controls {
-    width: 180px;
+    width: 100%;
+    max-width: 500px;
   }
 
   #controls .hold-label {
@@ -888,10 +1074,12 @@ canvas.cpu {
     min-width: 600px;
     gap: 10px;
     padding: 10px;
+    bottom: 120px; /* Account for bottom controls */
   }
 
   #controls {
-    width: 140px;
+    width: 100%;
+    max-width: 400px;
   }
 
   #soloInstructions {
@@ -1090,48 +1278,44 @@ canvas.cpu {
   /* Adjust main game area to account for fixed top score bar */
   #mainGameArea {
     position: fixed;
-    top: 50px;
-    bottom: 0;
+    top: 60px;
+    bottom: 120px; /* Leave space for mobile controls */
     left: 0;
     right: 0;
     padding: 10px;
     min-width: unset;
     flex-direction: column;
     gap: 10px;
-  } /* Horizontal layout for mobile - player canvas left, CPU canvas right */
+  } /* Horizontal layout for mobile - better spacing */
   #tetrisWrapper {
     display: flex;
     flex-direction: row;
     align-items: flex-start;
-    justify-content: flex-start;
+    justify-content: center; /* Center the layout */
     min-width: unset;
-    gap: 0px;
+    gap: 8px; /* Small gap between canvases */
     padding: 0;
-    padding-top: 20px;
+    padding-top: 15px;
     width: 100%;
     height: 100%;
   }
 
-  /* this controls the size of the player canvas */
-  /* actually there is a mobile reset at the bottom of this file because the */
-  /* media queries seem to be intefering? */
+  /* Canvas sizing for mobile - 3:1 aspect ratio */
   #playerCanvas {
-    width: 256px !important;
-    /*max-width: 240px !important;*/
-    height: 386px !important;
+    width: 240px !important;
+    max-width: 240px !important;
+    height: 360px !important;
     flex-shrink: 0;
-    top: 20px !important;
   }
 
   #cpuCanvas {
-    width: 90px !important;
-    max-width: 160px !important;
-    min-width: 80px !important;
-    height: 150px !important;
+    width: 80px !important;
+    max-width: 80px !important;
+    height: 120px !important; /* 3:1 aspect ratio for more compact view */
     flex-shrink: 0;
     border: 2px solid #e74c3c;
     border-radius: 4px;
-    margin-left: 30px !important;
+    margin-left: 15px !important;
   }
 
   /* Single canvas mode (solo or when CPU is hidden) */
@@ -1145,6 +1329,16 @@ canvas.cpu {
 
   /* Hide desktop controls on mobile */
   #controls {
+    display: none !important;
+  }
+  
+  /* High competition mobile adjustments - no need for extra top space */
+  body.high-competition #mainGameArea {
+    top: 60px !important; /* Same as other modes on mobile */
+  }
+  
+  /* High competition mobile - hide the horizontal bar, use mobile score pills instead */
+  body.high-competition #scoreBarVertical {
     display: none !important;
   }
 
@@ -1161,16 +1355,18 @@ canvas.cpu {
     z-index: 999 !important;
   } */
 
+  /* Position hold canvas underneath CPU canvas */
   #mobileHoldCanvas {
     display: block !important;
     position: fixed !important;
-    top: 565px !important;
-    right: 25px !important;
-    width: 60px !important;
-    height: 60px !important;
+    top: 380px !important; /* Under CPU canvas */
+    right: 35px !important; /* Centered under CPU */
+    width: 40px !important;
+    height: 40px !important;
     border: 2px solid #fff !important;
     background: #000 !important;
     z-index: 999 !important;
+    border-radius: 4px !important;
   }
 
   /* Hide original holdCanvas on mobile since it's in hidden controls */
@@ -1194,17 +1390,11 @@ canvas.cpu {
     margin-left: 30px !important;
   } */
 
-  /* Show mobile controls */
+  /* Show mobile controls at bottom */
   #mobileControls {
-    display: flex;
-    position: fixed;
-    top: 680px;
-    gap: 18px;
-    /*left: 10px;*/
-    /*width: 180px;*/
-    padding: 8px;
-    z-index: 90;
-    background: rgba(0, 0, 0, 0);
+    display: flex !important;
+    flex-direction: column;
+    gap: 8px;
   }
   .mobile-control-row {
     display: flex;
@@ -1297,29 +1487,31 @@ canvas.cpu {
     z-index: 16;
     letter-spacing: 1px;
   }
-  /* label for hold button */
+  /* label for hold button - under CPU canvas */
   #tetrisWrapper::after {
-    content: "HELD PIECE";
+    content: "HELD";
     position: fixed;
-    top: 550px;
-    right: 7px;
+    top: 425px;
+    right: 25px;
     color: #000000;
-    font-size: 10px;
+    font-size: 8px;
     font-weight: bold;
     text-align: center;
-    width: 100px;
+    width: 60px;
     z-index: 16;
     letter-spacing: 1px;
   }
 }
 
-/* vs‐mode canvas override */
-/* dirty but works??? */
-body:not(.solo-mode) #tetrisWrapper canvas.player {
-  width: 250px !important;
-  height: 500px !important;
-}
-body:not(.solo-mode) #tetrisWrapper canvas.cpu {
-  width: 250px !important;
-  height: 500px !important;
+/* vs‐mode canvas override - DESKTOP ONLY - Bigger sizes */
+@media (min-width: 481px) {
+  body:not(.solo-mode) #tetrisWrapper canvas.player {
+    width: min(350px, 28vw) !important;
+    height: min(700px, 60vh) !important;
+  }
+  /* CPU canvas - bigger responsive sizing */
+  body:not(.solo-mode) #tetrisWrapper canvas.cpu {
+    width: min(240px, 22vw) !important;
+    height: min(480px, 45vh) !important;
+  }
 }
