@@ -29,6 +29,39 @@
   const scoreBarVertical = document.getElementById("scoreBarVertical");
   const timerPil = document.getElementById("timerPill");
   const countdownOverlay = document.getElementById("countdownOverlay");
+
+  // --- Dynamic layout sizing for desktop ---
+  const scoreBarsEl = document.getElementById("scoreBars");
+  const timerBarEl = document.getElementById("timerBar");
+  const controlsEl = document.getElementById("controls");
+
+  function setCssPx(varName, px) {
+    document.documentElement.style.setProperty(varName, Math.max(0, Math.ceil(px)) + "px");
+  }
+
+  function measureLayout() {
+    // Only impact desktop layout; mobile has its own rules
+    const isDesktop = window.innerWidth > 480;
+    const topBarsH = (scoreBarsEl?.getBoundingClientRect().height || 0) +
+                     (timerBarEl?.getBoundingClientRect().height || 0);
+    const controlsVisible = controlsEl && getComputedStyle(controlsEl).display !== "none";
+    const controlsH = controlsVisible ? controlsEl.getBoundingClientRect().height : 0;
+    setCssPx("--top-bars-h", isDesktop ? topBarsH : 60);
+    setCssPx("--controls-h", isDesktop ? controlsH : 120);
+  }
+
+  // Observe size changes to keep variables accurate
+  try {
+    if ("ResizeObserver" in window) {
+      const ro = new ResizeObserver(() => measureLayout());
+      if (scoreBarsEl) ro.observe(scoreBarsEl);
+      if (timerBarEl) ro.observe(timerBarEl);
+      if (controlsEl) ro.observe(controlsEl);
+    }
+  } catch (_) {}
+  window.addEventListener("resize", measureLayout);
+  // Initial measure after first paint
+  requestAnimationFrame(measureLayout);
   
   // --- Countdown function (moved here for debug mode access) ---
   function startCountdown() {

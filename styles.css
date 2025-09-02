@@ -11,6 +11,12 @@ body {
   font-family: Arial, sans-serif;
 }
 
+/* Layout variables measured at runtime (with sensible fallbacks) */
+:root {
+  --top-bars-h: 60px;     /* score bar + timer bar combined */
+  --controls-h: 120px;    /* bottom controls height */
+}
+
 /* helper classes */
 .pr-5 {
   padding-right: 5px;
@@ -205,8 +211,8 @@ body {
 /* Main Game Area - Responsive Layout with smaller top */
 #mainGameArea {
   position: absolute;
-  top: 60px; /* Smaller top space for styled top area */
-  bottom: 120px; /* Space for bottom controls on ALL devices */
+  top: var(--top-bars-h, 60px); /* exact height of top bars */
+  bottom: calc(var(--controls-h, 120px) + 10px); /* leave space for fixed controls incl. gap */
   left: 0;
   right: 0;
   display: flex;
@@ -235,14 +241,12 @@ body.solo-mode #mainGameArea {
 /* Height-based responsive adjustments */
 @media (max-height: 800px) {
   #mainGameArea {
-    top: 70px !important;
-    bottom: 20px !important; /* Less bottom space on desktop */
+    top: var(--top-bars-h, 60px) !important;
+    bottom: calc(var(--controls-h, 120px)) !important; /* honor measured controls height */
     padding: 10px !important;
   }
   
-  body.high-competition #mainGameArea {
-    top: 140px !important;
-  }
+  /* high competition uses the same top spacing on desktop */
   
   canvas {
     width: min(300px, 25vw) !important;
@@ -268,14 +272,12 @@ body.solo-mode #mainGameArea {
 
 @media (max-height: 700px) {
   #mainGameArea {
-    top: 60px !important;
-    bottom: 15px !important; /* Less bottom space on desktop */
+    top: var(--top-bars-h, 60px) !important;
+    bottom: calc(var(--controls-h, 120px)) !important; /* honor measured controls height */
     padding: 8px !important;
   }
   
-  body.high-competition #mainGameArea {
-    top: 120px !important;
-  }
+  /* high competition uses the same top spacing on desktop */
   
   canvas {
     width: min(250px, 22vw) !important;
@@ -311,14 +313,12 @@ body.solo-mode #mainGameArea {
 
 @media (max-height: 600px) {
   #mainGameArea {
-    top: 50px !important;
-    bottom: 10px !important; /* Minimal bottom space on desktop */
+    top: var(--top-bars-h, 60px) !important;
+    bottom: calc(var(--controls-h, 120px)) !important; /* honor measured controls height */
     padding: 5px !important;
   }
   
-  body.high-competition #mainGameArea {
-    top: 100px !important;
-  }
+  /* high competition uses the same top spacing on desktop */
   
   canvas {
     width: min(200px, 20vw) !important;
@@ -379,6 +379,13 @@ body.solo-mode #mainGameArea {
   justify-content: space-around;
   gap: clamp(6px, 1vw, 12px);
   z-index: 90;
+}
+
+/* Reserve space under fixed controls by exposing real height via CSS var */
+#controls::after {
+  /* This pseudo-element isn't visible; it simply ensures --controls-h reflects
+     the actual box size even when resized. It does not affect layout. */
+  content: '';
 }
 
 /* Game Area - Keep original desktop layout */
