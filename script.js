@@ -6,7 +6,6 @@
   const valence = params.get("valence") || "positive";
   const round = parseInt(params.get("round")) || 1;
   const mode = params.get("mode") || "vs"; // 'vs' or 'solo'
-  const debug = params.get("debug") === "true"; // Add debug mode
   const isMobile = /Mobi|Android|iPhone|iPad|iPod/.test(navigator.userAgent);
 
   let plays = 0
@@ -28,61 +27,6 @@
   const loadingText = document.getElementById("loadingText");
   const scoreBarVertical = document.getElementById("scoreBarVertical");
   const timerPil = document.getElementById("timerPill");
-  const countdownOverlay = document.getElementById("countdownOverlay");
-
-  // --- Dynamic layout sizing for desktop ---
-  const scoreBarsEl = document.getElementById("scoreBars");
-  const timerBarEl = document.getElementById("timerBar");
-  const controlsEl = document.getElementById("controls");
-
-  function setCssPx(varName, px) {
-    document.documentElement.style.setProperty(varName, Math.max(0, Math.ceil(px)) + "px");
-  }
-
-  function measureLayout() {
-    const isDesktop = window.innerWidth > 480;
-    const scoreBarH = (scoreBarsEl?.getBoundingClientRect().height || 0);
-    const timerH = (timerBarEl?.getBoundingClientRect().height || 0);
-    const topBarsH = scoreBarH + timerH;
-    const controlsVisible = controlsEl && getComputedStyle(controlsEl).display !== "none";
-    const controlsH = controlsVisible ? controlsEl.getBoundingClientRect().height : 0;
-    // Always expose variables so both desktop and mobile can use them
-    setCssPx("--top-bars-h", topBarsH || 60);
-    setCssPx("--scorebars-h", scoreBarH || 36);
-    setCssPx("--controls-h", isDesktop ? controlsH : 120);
-  }
-
-  // Observe size changes to keep variables accurate
-  try {
-    if ("ResizeObserver" in window) {
-      const ro = new ResizeObserver(() => measureLayout());
-      if (scoreBarsEl) ro.observe(scoreBarsEl);
-      if (timerBarEl) ro.observe(timerBarEl);
-      if (controlsEl) ro.observe(controlsEl);
-    }
-  } catch (_) {}
-  window.addEventListener("resize", measureLayout);
-  // Initial measure after first paint
-  requestAnimationFrame(measureLayout);
-  
-  // --- Countdown function (moved here for debug mode access) ---
-  function startCountdown() {
-    let count = 3;
-    countdownOverlay.style.visibility = "visible";
-    countdownOverlay.textContent = count;
-    const timer = setInterval(() => {
-      count--;
-      if (count > 0) {
-        countdownOverlay.textContent = count;
-      } else {
-        clearInterval(timer);
-        countdownOverlay.style.visibility = "hidden";
-        lastTime = performance.now();
-        startTimer();
-        requestAnimationFrame(gameLoop);
-      }
-    }, 1000);
-  }
 
   // Add debug logging for garbage system
   console.log("Garbage system enabled for high competition:", competition === "high" && mode === "vs");
@@ -90,29 +34,6 @@
   if (mode === "solo") {
     document.body.classList.add("solo-mode");
     document.getElementById("loadingText").textContent = "Loading Tetris...";
-
-    // On mobile, place the hold preview canvas underneath the instructions
-    function placeHoldCanvasForSolo() {
-      const isMobileViewport = window.innerWidth <= 480;
-      const hold = document.getElementById("mobileHoldCanvas");
-      const instr = document.getElementById("soloInstructions");
-      if (!hold || !instr) return;
-      if (isMobileViewport) {
-        // Append as the last child of the instructions so it sits underneath
-        if (hold.parentElement !== instr) {
-          instr.appendChild(hold);
-        }
-        hold.style.display = "block";
-        hold.style.position = "static";
-        hold.width = 64;
-        hold.height = 64;
-      } else {
-        // For desktop solo, do not show the mobile hold canvas
-        hold.style.display = "none";
-      }
-    }
-    placeHoldCanvasForSolo();
-    window.addEventListener("resize", placeHoldCanvasForSolo);
   }
 
   // --- Competition Mode Setup ---
@@ -149,31 +70,41 @@
   //   }
   // }
 
-  // Debug mode - skip loading entirely
-  if (debug) {
-    console.log("DEBUG MODE: Skipping loading screen");
-    loadingOverlay.style.display = "none";
-    startCountdown();
-  } else {
-    // Normal loading sequence
-    // Animate bar to full over 4 seconds
-    requestAnimationFrame(() => (loadingBarFg.style.width = "100%"));
+  // Animate bar to full over 4 seconds
+  requestAnimationFrame(() => (loadingBarFg.style.width = "100%"));
 
-    // After 4s, show "Opponent Found" for 1s, then hide overlay and start countdown
+  // After 4s, show "Opponent Found" for 1s, then hide overlay and start countdown
+  setTimeout(() => {
+    if (mode === "solo") {
+      loadingText.textContent = "Ready to Play!";
+    } else {
+      loadingText.textContent = "Opponent Found";
+    }
     setTimeout(() => {
-      if (mode === "solo") {
-        loadingText.textContent = "Ready to Play!";
-      } else {
-        loadingText.textContent = "Opponent Found";
-      }
-      setTimeout(() => {
-        loadingOverlay.style.display = "none";
-        startCountdown();
-      }, 1000);
-    }, 4000);
-  }
+      loadingOverlay.style.display = "none";
+      startCountdown();
+    }, 1000);
+  }, 4000);
 
-  // Countdown function moved above
+  // --- Countdown for Game Start ---
+  const countdownOverlay = document.getElementById("countdownOverlay");
+  function startCountdown() {
+    let count = 3;
+    countdownOverlay.style.visibility = "visible";
+    countdownOverlay.textContent = count;
+    const timer = setInterval(() => {
+      count--;
+      if (count > 0) {
+        countdownOverlay.textContent = count;
+      } else {
+        clearInterval(timer);
+        countdownOverlay.style.visibility = "hidden";
+        lastTime = performance.now();
+        startTimer();
+        requestAnimationFrame(gameLoop);
+      }
+    }, 1000);
+  }
 
 const canvas = document.getElementById("playerCanvas");
 canvas.tabIndex = 0;  // make focusable
@@ -785,14 +716,8 @@ canvas.focus();       // immediately grab keyboard focus
         scoreBars.setAttribute("data-cpu-score", c);
       }
     }
-    // Update mobile pill fill percentages (desktop high-competition hides pills)
-    const pillsVisible = (() => {
-      const el = document.getElementById("scoreBars");
-      if (!el) return false;
-      const styles = getComputedStyle(el);
-      return styles.display !== "none";
-    })();
-    if (competition !== "low" && pillsVisible) {
+    // Update mobile pill fill percentages
+    if (competition !== "low") {
       const playerPill = document.getElementById("playerPill");
       const cpuPill = document.getElementById("cpuPill");
       if (playerPill || cpuPill) {
@@ -815,8 +740,6 @@ canvas.focus();       // immediately grab keyboard focus
     if (maxScore === 0) maxScore = 1;
     const playerPct = p / maxScore;
     const cpuPct = c / maxScore;
-    
-    // All bars are vertical now, always use height
     if (playerInner) playerInner.style.height = playerPct * 100 + "%";
     if (cpuInner && mode === "vs") cpuInner.style.height = cpuPct * 100 + "%";
 
@@ -847,7 +770,7 @@ canvas.focus();       // immediately grab keyboard focus
         }
       }
       // Shake mobile/horizontal score pills when scores increase
-      if (competition !== "low" && pillsVisible) {
+      if (competition !== "low") {
         if (playerScoreIncrease) {
           const playerPill = document.getElementById("playerPill");
           if (playerPill) {
@@ -864,7 +787,7 @@ canvas.focus();       // immediately grab keyboard focus
         }
       }
 
-      if (cpuScoreIncrease && mode === "vs" && pillsVisible) {
+      if (cpuScoreIncrease && mode === "vs") {
         const cpuPill = document.getElementById("cpuPill");
         if (cpuPill) {
           // Use different animation for mobile vs desktop
