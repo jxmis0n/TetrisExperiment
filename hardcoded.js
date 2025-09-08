@@ -16,6 +16,14 @@
  * The script is hardcoded for round 1 (`FILE_ROUND = 1`) and assumes embedded data is pre-piped.
  * Some legacy variables are retained for compatibility but are no longer strictly needed.
  */
+
+Qualtrics.SurveyEngine.addOnload(function ()
+{
+//hides the previous button on a page
+this.hidePreviousButton();
+
+});
+
 Qualtrics.SurveyEngine.addOnReady(function() {
 	// configuration variables (change these as needed for each round)
 	const TEST_FIELD = "TestField_Round1";  // used to verify embedded data works
@@ -23,7 +31,7 @@ Qualtrics.SurveyEngine.addOnReady(function() {
 	const PIPE_SEQ_FIELD = "Seq1";              // embedded data field for piped valence value
 	const FILE_ROUND = 1;                   // static file-based round number
 	const COMPETITION = "${e://Field/Competition}";  // piped embedded competition value
-	const MODE = "${e://Field/Mode}";         // piped embedded mode value
+	const MODE = "solo";         // piped embedded mode value
 
 	// fixed valence message sets by sequence round
 	// the numbers correspond to the file-based round number
@@ -91,8 +99,7 @@ Qualtrics.SurveyEngine.addOnReady(function() {
 
 	// run setup routines
 	initializeChatDataFields();
-	// var displayRound = getOrSetSequenceRound(); // used to index into message/field maps
-	var displayROUND = FILE_ROUND;
+	var displayRound = getOrSetSequenceRound(); // used to index into message/field maps
 	console.log("Display round:", displayRound);
 
 	// ensure embedded data for competition and mode are up-to-date
@@ -106,7 +113,7 @@ Qualtrics.SurveyEngine.addOnReady(function() {
 	// constructs the iframe src and injects the game into the survey DOM
 	function startGame(comp, mode) {
 		// url should not be hardcoded, fix for later
-		var src = "https://exale1n.github.io/jxm-test/"
+		var src = "https://jxmis0n.github.io/TetrisExperiment"
 			+ "?competition=" + encodeURIComponent(comp)
 			+ "&valence=" + encodeURIComponent(VALENCE_FIELD)
 			+ "&mode=" + encodeURIComponent(mode)
@@ -117,23 +124,39 @@ Qualtrics.SurveyEngine.addOnReady(function() {
 
 		// responsive styling based on device type
 		var isMobile = window.innerWidth <= 480 || /Mobi|Android|iPhone|iPad|iPod/.test(navigator.userAgent);
-		// this is so dirty i hate myself for it...
-		var style = isMobile
-			? "width:calc(100% + 20px);height:600px;overflow:hidden;margin:0 0 -30px -10px;"
-			: "width:120vh;height:90vh;overflow:hidden;";
+		// Use viewport-based sizing
+		var containerWidth, containerHeight;
+		if (isMobile) {
+			// Force proper height for game while preserving Next button
+			containerWidth = '100vw';
+			containerHeight = '80vh'; // Give iframe enough height
+			// Remove Qualtrics container constraints
+			jQuery("#" + qid + " .QuestionText").css({ padding: '0', margin: '0', height: '80vh', minHeight: '80vh' });
+			jQuery("#" + qid + " .QuestionBody").css({ padding: '0', margin: '0', height: 'auto', minHeight: 'auto' });
+			jQuery("#" + qid).css({ height: 'auto', minHeight: 'auto', overflow: 'visible', padding: '0', margin: '0' });
+			jQuery("body").css({ height: 'auto', minHeight: '100vh', overflow: 'auto', padding: '0', margin: '0' });
+			// Ensure Next button is visible
+			jQuery("#NextButton").css({ position: 'relative', zIndex: '999', marginTop: '10px' });
+		} else {
+			// Desktop: keep tall aspect, centered
+			var h = Math.round(window.innerHeight * 0.9);
+			var w = Math.min(window.innerWidth, Math.round(window.innerHeight * 1.2));
+			containerWidth = w + 'px';
+			containerHeight = h + 'px';
+		}
+		var style = 'width:' + containerWidth + ';height:' + containerHeight + ';overflow:visible;margin:0;padding:0;box-sizing:border-box;';
 
-		var html = '<div style="' + style + '">'
-			+ '<iframe src="' + src + '" '
-			+ 'style="width:100%;height:calc(100% - 20px);border:0;" allowfullscreen>'
-			+ '</iframe>'
-			+ '</div>';
+		var html = '<div style="' + style + '">' +
+			'<iframe src="' + src + '" ' +
+			'style="width:100%;height:100%;border:0;display:block;" allowfullscreen>' +
+			'</iframe>' +
+			'</div>';
 
 		console.log("Injecting iframe:", src);
 		jQuery("#" + qid + " .QuestionText").html(html);
 	}
 
 	startGame(COMPETITION, MODE);
-
 	// maps to match round index to embedded data field names
 	var chatFieldMap = { 1: "PosChat", 2: "NegChat", 3: "AmbChat" };
 	var scoreFieldMap = { 1: "PosScore", 2: "NegScore", 3: "AmbScore" };
@@ -142,6 +165,13 @@ Qualtrics.SurveyEngine.addOnReady(function() {
 	// listens for messages sent from the embedded game
 	window.addEventListener("message", function(evt) {
 		var d = evt.data;
+		
+		// continue from solo
+        if (d && d.type === 'soloContinue') {
+            jQuery("#NextButton").click();
+            return;
+        }
+		
 		if (!d || d.round !== displayRound) return;
 
 		// gameEnd message → record result and score
