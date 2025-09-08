@@ -906,105 +906,19 @@ canvas.cpu {
   }
 }
 
-/* Mobile styles for iPhone SE and similar devices */
+/* Mobile styles - Simplified flexbox approach */
 @media (max-width: 480px) {
-  /* solo stuff */
-  body.solo-mode #mainGameArea {
-    flex-direction: row !important;
-    align-items: flex-start !important;
-    justify-content: center !important;
-    gap: 8px !important;
-    padding: 8px !important;
+  /* Reset body for mobile scrolling */
+  html, body {
+    height: auto !important;
+    min-height: 100vh !important;
+    overflow-x: hidden;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    padding-bottom: 0 !important; /* Reduced padding */
   }
 
-  /* left pane */
-  body.solo-mode #playerCanvas {
-    flex: 0 0 130px !important; /* fixed 130px width */
-    width: 130px !important;
-    height: 208px !important;
-  }
-
-  /* right pane: instructions */
-  body.solo-mode #soloInstructions {
-    display: flex !important;
-    flex: 0 0 100px !important; /* fixed 100px width */
-    /*max-height: 208px !important; !* match canvas height *!*/
-    overflow-y: auto;
-    margin-top: 20px !important;
-    padding: 15px !important;
-  }
-
-  /* make instruction text smaller to fit */
-  body.solo-mode #soloInstructions h2 {
-    font-size: 1rem !important;
-    margin-bottom: 6px !important;
-  }
-  body.solo-mode .instruction-item {
-    /*gap: 6px !important;*/
-    margin-left: -8px;
-    padding: 4px 6px !important;
-  }
-  body.solo-mode .instruction-text {
-    font-size: 0.75rem !important;
-  }
-  body.solo-mode .key-icon {
-    font-size: 0.7rem !important;
-    min-width: 32px !important;
-    height: 20px !important;
-  }
-  body.solo-mode .goal-text {
-    font-size: 0.65rem !important;
-    padding: 4px !important;
-  }
-
-  /* icons */
-  /* we need different icons for mobile as SPACE and C dont make any fcking sense */
-  #soloInstructions .instruction-grid .instruction-item:nth-child(2) .key-icon,
-  #soloInstructions .instruction-grid .instruction-item:nth-child(4) .key-icon,
-  #soloInstructions .instruction-grid .instruction-item:nth-child(5) .key-icon {
-    position: relative !important;
-    font-size: 0 !important;        /* hide the original text */
-    line-height: 1;                  /* collapse but keep box */
-  }
-
-  #soloInstructions .instruction-grid .instruction-item:nth-child(2) .key-icon::before {
-    content: '⟳';
-  }
-
-  #soloInstructions .instruction-grid .instruction-item:nth-child(4) .key-icon::before {
-    content: "DROP";
-  }
-
-  #soloInstructions .instruction-grid .instruction-item:nth-child(5) .key-icon::before {
-    content: "HOLD";
-  }
-
-  #soloInstructions .instruction-grid .instruction-item:nth-child(2) .key-icon::before,
-  #soloInstructions .instruction-grid .instruction-item:nth-child(4) .key-icon::before,
-  #soloInstructions .instruction-grid .instruction-item:nth-child(5) .key-icon::before {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    white-space: nowrap;
-    font-size: 0.75rem;
-    font-weight: bold;
-    color: #fff;
-  }
-
-  /* timer bar */
-  #timerBar {
-    position: static;
-    top: 40px;
-    width: 100%;
-    height: 40px;
-    text-align: center;
-    display: flex;
-    align-items: center;
-    justify-content: right;
-  }
-
-  /* Make score bars vertical and stacked at top */
+  /* Fixed score bar at top */
   #scoreBars {
     position: fixed;
     top: 0;
@@ -1016,39 +930,30 @@ canvas.cpu {
     z-index: 100;
     display: flex;
     flex-direction: column;
-
     gap: 1px;
     height: auto;
     min-height: 60px;
   }
 
-  /* Add score text labels */
-
+  /* Mobile score pills */
   .pill {
-    display: block;
+    display: flex;
     margin: 0;
     padding: 0;
     border-radius: 16px;
     font-size: 12px;
     font-weight: bold;
     min-width: 140px;
-    text-align: center;
-    /*width: 180px;*/
     height: 24px;
     position: relative;
     overflow: hidden;
     background: #333;
-    /*border: 2px solid #555;*/
-    display: flex;
     align-items: center;
     justify-content: center;
-    color: rgb(27, 26, 26);
-
-    /* set to 9999 to bring to foreground */
+    color: #1a1a1a;
     z-index: 9999;
   }
 
-  /* Score bar fill effect */
   .pill::before {
     content: "";
     position: absolute;
@@ -1060,9 +965,7 @@ canvas.cpu {
     border-radius: 14px;
     z-index: -1;
   }
-  /* Specific content for each pill */
 
-  /* Specific colors for each pill */
   .pill.red::before {
     background: linear-gradient(90deg, #dc2626 0%, #f14242b2 100%);
   }
@@ -1075,146 +978,172 @@ canvas.cpu {
     background: linear-gradient(90deg, #7c3aed 0%, #8a5cf6bd 100%);
   }
 
-  /* Order the pills correctly */
-  #cpuPill {
-    order: -1;
+  #cpuPill { order: -1; }
+  #playerPill { order: 1; }
+
+  /* Hide desktop elements */
+  #controls { display: none; }
+  #scoreBarVertical { display: none; }
+  #holdCanvas { display: none; }
+
+  /* Main game container - keep side-by-side layout */
+  #mainGameArea {
+    position: static;
+    top: unset;
+    bottom: unset;
+    margin-top: 60px; /* Space for fixed score bar */
+    padding: 16px;
+    min-width: unset;
+    display: flex;
+    flex-direction: row; /* Changed to row for side-by-side layout */
+    align-items: flex-start; /* Aligned to start for side-by-side */
+    justify-content: center;
+    gap: 16px;
+    height: auto !important;
+    min-height: calc(100vh - 60px) !important; /* Account for score bar */
+    padding-bottom: 50px !important;
   }
 
-  #playerPill {
-    order: 1;
+  /* Lower min-height in solo mode to reduce empty space */
+  body.solo-mode #mainGameArea {
+    min-height: calc(100vh - 120px) !important; /* Further reduced for solo mode */
+    padding-left: 8px; /* Reduced padding */
+    padding-right: 8px; /* Reduced padding */
   }
-  /* Hide vertical score bars in mobile */
-  #scoreBarVertical {
-    display: none !important;
-  }
-  /* Adjust main game area to account for fixed top score bar */
-  #mainGameArea {
-    position: fixed;
-    top: 50px;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    padding: 10px;
-    min-width: unset;
-    flex-direction: column;
-    gap: 10px;
-  } /* Horizontal layout for mobile - player canvas left, CPU canvas right */
+
+  /* Game area container - maintain side-by-side for competition */
   #tetrisWrapper {
     display: flex;
-    flex-direction: row;
+    flex-direction: row; /* Keep side-by-side */
     align-items: flex-start;
-    justify-content: flex-start;
-    min-width: unset;
-    gap: 0px;
-    padding: 0;
-    padding-top: 20px;
+    justify-content: center;
+    gap: 12px;
     width: 100%;
-    height: 100%;
+    max-width: 100%;
   }
 
-  /* this controls the size of the player canvas */
-  /* actually there is a mobile reset at the bottom of this file because the */
-  /* media queries seem to be intefering? */
+  /* Canvas sizing for competition mode */
   #playerCanvas {
-    width: 256px !important;
-    /*max-width: 240px !important;*/
-    height: 386px !important;
+    width: 160px;
+    height: 320px;
     flex-shrink: 0;
-    top: 20px !important;
   }
 
   #cpuCanvas {
-    width: 90px !important;
-    max-width: 160px !important;
-    min-width: 80px !important;
-    height: 150px !important;
+    width: 140px;
+    height: 280px;
     flex-shrink: 0;
-    border: 2px solid #e74c3c;
-    border-radius: 4px;
-    margin-left: 30px !important;
   }
 
-  /* Single canvas mode (solo or when CPU is hidden) */
-  #tetrisWrapper:has(#cpuCanvas[style*="display: none"]) #playerCanvas,
+  /* Solo mode overrides */
+  body.solo-mode #cpuCanvas {
+    display: none;
+  }
+
+  body.solo-mode #tetrisWrapper {
+    flex-direction: row; /* Changed to row for solo mode */
+    align-items: flex-start; /* Aligned to start for side-by-side */
+    flex-shrink: 0; /* Prevent shrinking */
+    width: auto; /* Take natural width */
+  }
+
   body.solo-mode #playerCanvas {
-    width: 320px !important;
-    max-width: 320px !important;
-    height: 450px !important;
-    margin: 0 auto;
+    width: 160px; /* Adjusted width to fit instructions */
+    height: 320px;
   }
 
-  /* Hide desktop controls on mobile */
-  #controls {
-    display: none !important;
-  }
-
-  /* Show mobile-specific hold canvas */
-  /* #mobileHoldCanvas {
-    display: block !important;
-    position: fixed !important;
-    top: 270px !important;
-    right: 15px !important;
-    width: 100px !important;
-    height: 100px !important;
-    border: 2px solid #fff !important;
-    background: #000 !important;
-    z-index: 999 !important;
-  } */
-
+  /* Hold canvas - inside mobile controls, left of hold button */
   #mobileHoldCanvas {
-    display: block !important;
-    position: fixed !important;
-    top: 565px !important;
-    right: 25px !important;
-    width: 60px !important;
-    height: 60px !important;
-    border: 2px solid #fff !important;
-    background: #000 !important;
-    z-index: 999 !important;
+    display: inline-block;
+    width: 40px; /* Reduced width */
+    height: 40px; /* Reduced height */
+    border: 2px solid #fff;
+    background: #000;
+    margin-right: 4px; /* Reduced margin */
+    vertical-align: middle;
   }
 
-  /* Hide original holdCanvas on mobile since it's in hidden controls */
-  #holdCanvas {
-    display: none !important;
+  /* Solo instructions - position to the right of game */
+  body.solo-mode #soloInstructions {
+    display: flex;
+    flex-direction: column;
+    width: 140px; /* Adjusted width to fit */
+    max-width: 140px;
+    padding: 8px;
+    margin: 0;
+    overflow: visible;
+    font-size: 0.75rem;
+    flex-shrink: 0; /* Prevent shrinking */
   }
 
-  /* Hide solo instructions on mobile */
-  #soloInstructions {
-    display: none !important;
+  body.solo-mode #soloInstructions h2 {
+    font-size: 1rem;
+    margin-bottom: 8px;
   }
 
-  /* body.solo-mode #soloInstructions {
-    width: 90px !important;
-    max-width: 160px !important;
-    min-width: 80px !important;
-    height: 150px !important;
-    flex-shrink: 0;
-    border: 2px solid #e74c3c;
-    border-radius: 4px;
-    margin-left: 30px !important;
-  } */
+  body.solo-mode .instruction-item {
+    padding: 6px 8px;
+    margin-bottom: 4px;
+  }
 
-  /* Show mobile controls */
+  body.solo-mode .instruction-text {
+    font-size: 0.8rem;
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+
+  body.solo-mode .key-icon {
+    font-size: 0.7rem;
+    min-width: 32px;
+    height: 20px;
+  }
+
+  body.solo-mode .goal-text {
+    font-size: 0.7rem;
+    padding: 8px;
+  }
+
+  /* Mobile control icons for better UX */
+  #soloInstructions .instruction-grid .instruction-item:nth-child(2) .key-icon,
+  #soloInstructions .instruction-grid .instruction-item:nth-child(4) .key-icon,
+  #soloInstructions .instruction-grid .instruction-item:nth-child(5) .key-icon {
+    position: relative;
+    font-size: 0;
+    line-height: 1;
+  }
+
+  #soloInstructions .instruction-grid .instruction-item:nth-child(2) .key-icon::before { content: '⟳'; }
+  #soloInstructions .instruction-grid .instruction-item:nth-child(4) .key-icon::before { content: "DROP"; }
+  #soloInstructions .instruction-grid .instruction-item:nth-child(5) .key-icon::before { content: "HOLD"; }
+
+  #soloInstructions .instruction-grid .instruction-item:nth-child(2) .key-icon::before,
+  #soloInstructions .instruction-grid .instruction-item:nth-child(4) .key-icon::before,
+  #soloInstructions .instruction-grid .instruction-item:nth-child(5) .key-icon::before {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    white-space: nowrap;
+    font-size: 0.7rem;
+    font-weight: bold;
+    color: #fff;
+  }
+
+  /* Mobile controls - fixed at bottom */
   #mobileControls {
     display: flex;
     position: fixed;
-    top: 680px;
-    gap: 18px;
-    /*left: 10px;*/
-    /*width: 180px;*/
-    padding: 8px;
-    z-index: 90;
-    background: rgba(0, 0, 0, 0);
-  }
-  .mobile-control-row {
-    display: flex;
+    bottom: calc(env(safe-area-inset-bottom) + 10px); /* Removed extra spacing from bottom */
+    left: 0;
+    right: 0;
+    flex-wrap: wrap;
     justify-content: center;
-    gap: 6px;
-    margin-bottom: 6px;
-  }
-
-  .mobile-control-row:last-child {
-    margin-bottom: 0;
+    align-items: center;
+    gap: 4px; /* Reduced gap */
+    padding: 4px; /* Reduced padding */
+    background: rgba(0, 0, 0, 0.7);
+    z-index: 85;
+    flex-direction: column; /* Stack controls vertically */
   }
 
   #mobileControls button {
@@ -1222,12 +1151,12 @@ canvas.cpu {
     color: #ffffff;
     border: 2px solid #1a1a1a;
     border-radius: 6px;
-    padding: 8px 10px;
-    font-size: 31px;
+    padding: 4px 6px; /* Reduced padding */
+    font-size: 14px; /* Reduced font size */
     font-weight: bold;
     text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1);
-    min-width: 65px;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    min-width: 40px; /* Reduced min-width */
     cursor: pointer;
     user-select: none;
     touch-action: manipulation;
@@ -1238,88 +1167,40 @@ canvas.cpu {
     border-color: #000;
     transform: scale(0.95);
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5), inset 0 2px 4px rgba(0, 0, 0, 0.3);
-  } /* Specific button sizing */
-  #mobileControls button[data-cmd="hold"] {
-    /*min-width: 70px;*/
-    background: linear-gradient(to bottom, #3a3a3a 0%, #1f1f1f 100%);
-    border: 2px solid #0a0a0a;
-    font-size: 10px;
-    letter-spacing: 0.5px;
-    padding: 8px 10px;
   }
 
-  #mobileControls button[data-cmd="rotate"] {
-    /*min-width: 60px;*/
-    background: linear-gradient(to bottom, #4a4a4a 0%, #2a2a2a 100%);
-    border: 2px solid #1a1a1a;
-    /*font-size: 10px;*/
-    letter-spacing: 0.5px;
-    padding: 8px 10px;
-  }
-
-  /* Movement buttons (left, down, right) */
-  #mobileControls button[data-cmd="moveLeft"],
-  #mobileControls button[data-cmd="softDrop"],
-  #mobileControls button[data-cmd="moveRight"] {
-    /*min-width: 45px;*/
-    padding: 8px 10px;
-    font-size: 12px;
-  }
-
-  /* Space Drop button - positioned separately at bottom */
+  /* Fixed drop button - avoid navigation bars */
   #mobileControls button[data-cmd="hardDrop"] {
-    position: fixed;
-    bottom: 10px;
-    left: 10px;
-    right: 10px;
-    min-width: unset;
-    width: calc(100% - 20px);
+    position: static; /* Remove fixed positioning */
+    bottom: unset; /* Remove bottom positioning */
+    left: unset;
+    right: unset;
+    width: 100%; /* Make it fill the container */
     background: linear-gradient(to bottom, #555 0%, #111 100%);
     border: 3px solid #000;
-    font-size: 10px;
+    font-size: 14px; /* Increased font size for better readability */
     letter-spacing: 2px;
-    padding: 12px 16px;
+    padding: 8px 10px; /* Reduced padding */
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.15);
     z-index: 95;
   }
-  /* Create mobile-specific hold label since desktop controls are hidden */
 
-  #mobileInstructions::after {
-    content: "USE THE BUTTONS BELOW TO PLAY TETRIS.";
-    position: fixed;
-    top: 260px;
-    right: 7px;
-    color: #000000;
-    font-size: 10px;
-    font-weight: bold;
-    text-align: center;
-    width: 100px;
-    z-index: 16;
-    letter-spacing: 1px;
+  #mobileControlsTopRow {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 4px;
+    width: 100%;
   }
-  /* label for hold button */
-  #tetrisWrapper::after {
-    content: "HELD PIECE";
-    position: fixed;
-    top: 550px;
-    right: 7px;
-    color: #000000;
-    font-size: 10px;
-    font-weight: bold;
-    text-align: center;
-    width: 100px;
-    z-index: 16;
-    letter-spacing: 1px;
+
+  #mobileControlsTopRow .mobile-control-row {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 4px;
+    width: auto;
   }
 }
 
-/* vs‐mode canvas override */
-/* dirty but works??? */
-body:not(.solo-mode) #tetrisWrapper canvas.player {
-  width: 250px !important;
-  height: 500px !important;
-}
-body:not(.solo-mode) #tetrisWrapper canvas.cpu {
-  width: 250px !important;
-  height: 500px !important;
-}
