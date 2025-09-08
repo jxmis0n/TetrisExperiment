@@ -529,24 +529,30 @@ canvas.focus();       // immediately grab keyboard focus
       }
     }
     drawHold() {
-      // Check if we're on mobile (screen width <= 480px)
-      const isMobile = window.innerWidth <= 480;
-      const canvasId = isMobile ? "mobileHoldCanvas" : "holdCanvas";
+      // Always try to update both desktop and mobile hold canvases
+      this.updateHoldCanvas("holdCanvas");
+      this.updateHoldCanvas("mobileHoldCanvas");
+      console.log("drawHold called, held piece:", this.heldPiece);
+    }
+    
+    updateHoldCanvas(canvasId) {
       const hc = document.getElementById(canvasId);
-
-      if (!hc) {
-        console.error(`${canvasId} not found!`);
-        return;
-      }
+      console.log(`Updating canvas ${canvasId}:`, hc ? "found" : "not found");
+      if (!hc) return; // Canvas doesn't exist, skip
 
       const ctx = hc.getContext("2d");
+      
+      // Determine canvas size based on which canvas we're updating
+      const isMobileCanvas = canvasId === "mobileHoldCanvas";
+      const canvasSize = isMobileCanvas ? 60 : 64;
+      
       // Always clear and redraw to ensure consistency
-      const canvasSize = isMobile ? 100 : 64;
       ctx.clearRect(0, 0, canvasSize, canvasSize);
+      
       if (!this.heldPiece) {
         // Draw empty state indicator in center
         ctx.fillStyle = "#888";
-        const indicatorSize = isMobile ? 12 : 8;
+        const indicatorSize = isMobileCanvas ? 12 : 8;
         const centerX = (canvasSize - indicatorSize) / 2;
         const centerY = (canvasSize - indicatorSize) / 2;
         ctx.fillRect(centerX, centerY, indicatorSize, indicatorSize);
